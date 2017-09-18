@@ -1,0 +1,443 @@
+函数名: delay 
+功 能: 将程序的执行暂停一段时间(毫秒) 
+用 法: void delay(unsigned milliseconds); 
+程序例: 
+/* Emits a 440-Hz tone for 500 milliseconds */ 
+#include 
+
+int main(void) 
+{ 
+sound(440); 
+delay(500); 
+nosound(); 
+
+return 0; 
+} 
+
+
+
+函数名: delline 
+功 能: 在文本窗口中删去一行 
+用 法: void delline(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+cprintf("The function DELLINE deletes \ 
+the line containing the\r\n"); 
+cprintf("cursor and moves all lines \ 
+below it one line up.\r\n"); 
+cprintf("DELLINE operates within the \ 
+currently active text\r\n"); 
+cprintf("window. Press any key to \ 
+continue . . ."); 
+gotoxy(1,2); /* Move the cursor to the 
+second line and first column */ 
+getch(); 
+
+delline(); 
+getch(); 
+
+return 0; 
+} 
+
+
+函数名: detectgraph 
+功 能: 通过检测硬件确定图形驱动程序和模式 
+用 法: void far detectgraph(int far *graphdriver, int far *graphmode); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+/* names of the various cards supported */ 
+char *dname[] = { "requests detection", 
+"a CGA", 
+"an MCGA", 
+"an EGA", 
+"a 64K EGA", 
+"a monochrome EGA", 
+"an IBM 8514", 
+"a Hercules monochrome", 
+"an AT&T 6300 PC", 
+"a VGA", 
+"an IBM 3270 PC" 
+}; 
+
+int main(void) 
+{ 
+/* returns detected hardware info. */ 
+int gdriver, gmode, errorcode; 
+
+/* detect graphics hardware available */ 
+detectgraph(&gdriver, &gmode); 
+
+/* read result of detectgraph call */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error 
+occurred */ 
+{ 
+printf("Graphics error: %s\n", \ 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error 
+code */ 
+} 
+
+/* display the information detected */ 
+clrscr(); 
+printf("You have %s video display \ 
+card.\n", dname[gdriver]); 
+printf("Press any key to halt:"); 
+getch(); 
+return 0; 
+} 
+
+
+
+
+函数名: difftime 
+功 能: 计算两个时刻之间的时间差 
+用 法: double difftime(time_t time2, time_t time1); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+time_t first, second; 
+
+clrscr(); 
+first = time(NULL); /* Gets system 
+time */ 
+delay(2000); /* Waits 2 secs */ 
+second = time(NULL); /* Gets system time 
+again */ 
+
+printf("The difference is: %f \ 
+seconds\n",difftime(second,first)); 
+getch(); 
+
+return 0; 
+} 
+
+
+
+函数名: disable 
+功 能: 屏蔽中断 
+用 法: void disable(void); 
+程序例: 
+
+/***NOTE: This is an interrupt service 
+routine. You cannot compile this program 
+with Test Stack Overflow turned on and 
+get an executable file that operates 
+correctly. */ 
+
+#include 
+#include 
+#include 
+
+#define INTR 0X1C /* The clock tick 
+interrupt */ 
+
+void interrupt ( *oldhandler)(void); 
+
+int count=0; 
+
+void interrupt handler(void) 
+{ 
+/* disable interrupts during the handling of 
+the interrupt */ 
+disable(); 
+/* increase the global counter */ 
+count++; 
+/* reenable interrupts at the end of the 
+handler */ 
+enable(); 
+/* call the old routine */ 
+oldhandler(); 
+} 
+
+int main(void) 
+{ 
+/* save the old interrupt vector */ 
+oldhandler = getvect(INTR); 
+
+/* install the new interrupt handler */ 
+setvect(INTR, handler); 
+
+/* loop until the counter exceeds 20 */ 
+while (count < 20) 
+printf("count is %d\n",count); 
+
+/* reset the old interrupt handler */ 
+setvect(INTR, oldhandler); 
+
+return 0; 
+} 
+
+函数名: div 
+功 能: 将两个整数相除, 返回商和余数 
+用 法: div_t (int number, int denom); 
+程序例: 
+
+#include 
+#include 
+
+div_t x; 
+
+int main(void) 
+{ 
+x = div(10,3); 
+printf("10 div 3 = %d remainder %d\n", x.quot, x.rem); 
+
+return 0; 
+} 
+
+
+
+函数名: dosexterr 
+功 能: 获取扩展DOS错误信息 
+用 法: int dosexterr(struct DOSERR *dblkp); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+FILE *fp; 
+struct DOSERROR info; 
+
+fp = fopen("perror.dat","r"); 
+if (!fp) perror("Unable to open file for 
+reading"); 
+dosexterr(&info); 
+
+printf("Extended DOS error \ 
+information:\n"); 
+printf(" Extended error: \ 
+%d\n",info.exterror); 
+printf(" Class: \ 
+%x\n",info.class); 
+printf(" Action: \ 
+%x\n",info.action); 
+printf(" Error Locus: \ 
+%x\n",info.locus); 
+
+return 0; 
+} 
+
+
+
+函数名: dostounix 
+功 能: 转换日期和时间为UNIX时间格式 
+用 法: long dostounix(struct date *dateptr, struct time *timeptr); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+time_t t; 
+struct time d_time; 
+struct date d_date; 
+struct tm *local; 
+
+getdate(&d_date); 
+gettime(&d_time); 
+
+t = dostounix(&d_date, &d_time); 
+local = localtime(&t); 
+printf("Time and Date: %s\n", \ 
+asctime(local)); 
+
+return 0; 
+} 
+
+
+
+函数名: drawpoly 
+功 能: 画多边形 
+用 法: void far drawpoly(int numpoints, int far *polypoints); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int maxx, maxy; 
+
+/* our polygon array */ 
+int poly[10]; 
+
+/* initialize graphics and local 
+variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) 
+/* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", \ 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+maxx = getmaxx(); 
+maxy = getmaxy(); 
+
+poly[0] = 20; /* 1st vertext */ 
+poly[1] = maxy / 2; 
+
+poly[2] = maxx - 20; /* 2nd */ 
+poly[3] = 20; 
+
+poly[4] = maxx - 50; /* 3rd */ 
+poly[5] = maxy - 20; 
+
+poly[6] = maxx / 2; /* 4th */ 
+poly[7] = maxy / 2; 
+/* 
+drawpoly doesn't automatically close 
+the polygon, so we close it. 
+*/ 
+poly[8] = poly[0]; 
+poly[9] = poly[1]; 
+
+/* draw the polygon */ 
+drawpoly(5, poly); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: dup 
+功 能: 复制一个文件句柄 
+用 法: int dup(int handle); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+void flush(FILE *stream); 
+
+int main(void) 
+{ 
+FILE *fp; 
+char msg[] = "This is a test"; 
+
+/* create a file */ 
+fp = fopen("DUMMY.FIL", "w"); 
+
+/* write some data to the file */ 
+fwrite(msg, strlen(msg), 1, fp); 
+
+clrscr(); 
+printf("Press any key to flush \ 
+DUMMY.FIL:"); 
+getch(); 
+
+/* flush the data to DUMMY.FIL without 
+closing it */ 
+flush(fp); 
+
+printf("\nFile was flushed, Press any \ 
+key to quit:"); 
+getch(); 
+return 0; 
+} 
+
+void flush(FILE *stream) 
+{ 
+int duphandle; 
+
+/* flush TC's internal buffer */ 
+fflush(stream); 
+
+/* make a duplicate file handle */ 
+duphandle = dup(fileno(stream)); 
+
+/* close the duplicate handle to flush the 
+DOS buffer */ 
+close(duphandle); 
+} 
+
+
+
+函数名: dup2 
+功 能: 复制文件句柄 
+用 法: int dup2(int oldhandle, int newhandle); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+#define STDOUT 1 
+
+int nul, oldstdout; 
+char msg[] = "This is a test"; 
+
+/* create a file */ 
+nul = open("DUMMY.FIL", O_CREAT | O_RDWR, 
+S_IREAD | S_IWRITE); 
+
+/* create a duplicate handle for standard 
+output */ 
+oldstdout = dup(STDOUT); 
+/* 
+redirect standard output to DUMMY.FIL 
+by duplicating the file handle onto the 
+file handle for standard output. 
+*/ 
+dup2(nul, STDOUT); 
+
+/* close the handle for DUMMY.FIL */ 
+close(nul); 
+
+/* will be redirected into DUMMY.FIL */ 
+write(STDOUT, msg, strlen(msg)); 
+
+/* restore original standard output 
+handle */ 
+dup2(oldstdout, STDOUT); 
+
+/* close duplicate handle for STDOUT */ 
+close(oldstdout); 
+
+return 0; 
+} 
+
+

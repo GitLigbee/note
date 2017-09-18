@@ -1,0 +1,167 @@
+函数大全(n ,o开头)
+
+void normvideo(void );
+选择正常亮度字符。
+将文本属性（前景和背景）置为启动程序时它所具有的值，来选择标准字符。
+
+
+void nosound(void );
+关闭由调用 sound而发声的扬声器。
+
+
+函数名: open 
+功 能: 打开一个文件用于读或写 
+用 法: int open(char *pathname, int access[, int permiss]); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char msg[] = "Hello world"; 
+
+if ((handle = open("TEST.$$$", O_CREAT | O_TEXT)) == -1) 
+{ 
+perror("Error:"); 
+return 1; 
+} 
+write(handle, msg, strlen(msg)); 
+close(handle); 
+return 0; 
+} 
+
+
+
+函数名: outport 
+功 能: 输出整数到硬件端口中 
+用 法: void outport(int port, int value); 
+程序例: 
+
+#include 
+#include 
+int main(void) 
+{ 
+int value = 64; 
+int port = 0; 
+
+outportb(port, value); 
+printf("Value %d sent to port number %d\n", value, port); 
+return 0; 
+} 
+
+
+
+函数名: outportb 
+功 能: 输出字节到硬件端口中 
+用 法: void outportb(int port, char byte); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int value = 64; 
+int port = 0; 
+
+outportb(port, value); 
+printf("Value %d sent to port number %d\n", value, port); 
+return 0; 
+} 
+
+
+
+函数名: outtext 
+功 能: 在视区显示一个字符串 
+用 法: void far outtext(char far *textstring); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* move the C.P. to the center of the screen */ 
+moveto(midx, midy); 
+
+/* output text starting at the C.P. */ 
+outtext("This "); 
+outtext("is "); 
+outtext("a "); 
+outtext("test."); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: outtextxy 
+功 能: 在指定位置显示一字符串 
+用 法: void far outtextxy(int x, int y, char *textstring); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+
+/* initialize graphics and local variables */ 
+initgraph( &gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* output text at the center of the screen*/ 
+/* Note: the C.P. doesn't get changed.*/ 
+outtextxy(midx, midy, "This is a test."); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 

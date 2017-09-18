@@ -1,0 +1,593 @@
+函数大全(m开头)
+
+main()主函数
+每一C 程序都 必须 有一main()函数, 可以根据自己的爱好把它放在程序的某 
+个地方。有些程序员把它放在最前面, 而另一些程序员把它放在最后面, 无论放 
+在哪个地方, 以下几点说明都是适合的。 
+1. main() 参数 
+在Turbo C2.0启动过程中, 传递main()函数三个参数: argc, argv和env。 
+* argc: 整数, 为传给main()的命令行参数个数。 
+* argv: 字符串数组。 
+在DOS 3.X 版本中, argv[0] 为程序运行的全路径名; 对DOS 3.0 
+以下的版本, argv[0]为空串("") 。 
+argv[1] 为在DOS命令行中执行程序名后的第一个字符串; 
+argv[2] 为执行程序名后的第二个字符串; 
+... 
+argv[argc]为NULL。 
+*env: 安符串数组。env[] 的每一个元素都包含ENVVAR=value形式的字符 
+串。其中ENVVAR为环境变量如PATH或87。value 为ENVVAR的对应值如C:\DOS, C: 
+\TURBOC(对于PATH) 或YES(对于87)。 
+Turbo C2.0启动时总是把这三个参数传递给main()函数, 可以在用户程序中 
+说明(或不说明)它们, 如果说明了部分(或全部)参数, 它们就成为main()子程序 
+的局部变量。 
+请注意: 一旦想说明这些参数, 则必须按argc, argv, env 的顺序, 如以下 
+的例子: 
+main() 
+main(int argc) 
+main(int argc, char *argv[]) 
+main(int argc, char *argv[], char *env[]) 
+其中第二种情况是合法的, 但不常见, 因为在程序中很少有只用argc, 而不 
+用argv[]的情况。 
+以下提供一样例程序EXAMPLE.EXE, 演示如何在main()函数中使用三个参数: 
+/*program name EXAMPLE.EXE*/ 
+#include 
+#include 
+main(int argc, char *argv[], char *env[]) 
+{ 
+int i; 
+printf("These are the %d command- line arguments passed to 
+main:\n\n", argc); 
+for(i=0; i<=argc; i++) 
+printf("argv[%d]:%s\n", i, argv[i]); 
+printf("\nThe environment string(s)on this system are:\n\n"); 
+for(i=0; env[i]!=NULL; i++) 
+printf(" env[%d]:%s\n", i, env[i]); 
+} 
+如果在DOS 提示符下, 按以下方式运行EXAMPLE.EXE: 
+C:\example first_argument "argument with blanks" 3 4 "last but 
+one" stop! 
+注意: 可以用双引号括起内含空格的参数, 如本例中的: " argument 
+with blanks"和"Last but one")。 
+结果是这样的: 
+The value of argc is 7 
+These are the 7 command-linearguments passed to main: 
+argv[0]:C:\TURBO\EXAMPLE.EXE 
+argv[1]:first_argument 
+argv[2]:argument with blanks 
+argv[3]:3 
+argv[4]:4 
+argv[5]:last but one 
+argv[6]:stop! 
+argv[7]:(NULL) 
+The environment string(s) on this system are: 
+env[0]: COMSPEC=C:\COMMAND.COM 
+env[1]: PROMPT=$P$G /*视具体设置而定*/ 
+env[2]: PATH=C:\DOS;C:\TC /*视具体设置而定*/ 
+
+应该提醒的是: 传送main() 函数的命令行参数的最大长度为128 个字符 (包 
+括参数间的空格), 这是由DOS 限制的。 
+
+
+函数名: matherr 
+功 能: 用户可修改的数学错误处理程序 
+用 法: int matherr(struct exception *e); 
+程序例: 
+
+/* This is a user-defined matherr function that prevents 
+any error messages from being printed. */ 
+
+#include 
+
+int matherr(struct exception *a) 
+{ 
+return 1; 
+} 
+
+
+
+
+函数名: memccpy 
+功 能: 从源source中拷贝n个字节到目标destin中 
+用 法: void *memccpy(void *destin, void *source, unsigned char ch, 
+unsigned n); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char *src = "This is the source string"; 
+char dest[50]; 
+char *ptr; 
+
+ptr = memccpy(dest, src, 'c', strlen(src)); 
+
+if (ptr) 
+{ 
+*ptr = '\0'; 
+printf("The character was found: %s\n", dest); 
+} 
+else 
+printf("The character wasn't found\n"); 
+return 0; 
+} 
+
+
+
+函数名: malloc 
+功 能: 内存分配函数 
+用 法: void *malloc(unsigned size); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char *str; 
+
+/* allocate memory for string */ 
+/* This will generate an error when compiling */ 
+/* with C++, use the new operator instead. */ 
+if ((str = malloc(10)) == NULL) 
+{ 
+printf("Not enough memory to allocate buffer\n"); 
+exit(1); /* terminate program if out of memory */ 
+} 
+
+/* copy "Hello" into string */ 
+strcpy(str, "Hello"); 
+
+/* display string */ 
+printf("String is %s\n", str); 
+
+/* free memory */ 
+free(str); 
+
+return 0; 
+} 
+
+
+
+
+函数名: memchr 
+功 能: 在数组的前n个字节中搜索字符 
+用 法: void *memchr(void *s, char ch, unsigned n); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char str[17]; 
+char *ptr; 
+
+strcpy(str, "This is a string"); 
+ptr = memchr(str, 'r', strlen(str)); 
+if (ptr) 
+printf("The character 'r' is at position: %d\n", ptr - str); 
+else 
+printf("The character was not found\n"); 
+return 0; 
+} 
+
+
+函数名: memcpy 
+功 能: 从源source中拷贝n个字节到目标destin中 
+用 法: void *memcpy(void *destin, void *source, unsigned n); 
+程序例: 
+
+#include 
+#include 
+int main(void) 
+{ 
+char src[] = "******************************"; 
+char dest[] = "abcdefghijlkmnopqrstuvwxyz0123456709"; 
+char *ptr; 
+printf("destination before memcpy: %s\n", dest); 
+ptr = memcpy(dest, src, strlen(src)); 
+if (ptr) 
+printf("destination after memcpy: %s\n", dest); 
+else 
+printf("memcpy failed\n"); 
+return 0; 
+} 
+
+
+
+函数名: memicmp 
+功 能: 比较两个串s1和s2的前n个字节, 忽略大小写 
+用 法: int memicmp(void *s1, void *s2, unsigned n); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char *buf1 = "ABCDE123"; 
+char *buf2 = "abcde456"; 
+int stat; 
+stat = memicmp(buf1, buf2, 5); 
+printf("The strings to position 5 are "); 
+if (stat) 
+printf("not "); 
+printf("the same\n"); 
+return 0; 
+} 
+
+
+
+函数名: memmove 
+功 能: 移动一块字节 
+用 法: void *memmove(void *destin, void *source, unsigned n); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char *dest = "abcdefghijklmnopqrstuvwxyz0123456789"; 
+char *src = "******************************"; 
+printf("destination prior to memmove: %s\n", dest); 
+memmove(dest, src, 26); 
+printf("destination after memmove: %s\n", dest); 
+return 0; 
+} 
+
+
+
+
+函数名: memset 
+功 能: 设置s中的所有字节为ch, s数组的大小由n给定 
+用 法: void *memset(void *s, char ch, unsigned n); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char buffer[] = "Hello world\n"; 
+
+printf("Buffer before memset: %s\n", buffer); 
+memset(buffer, '*', strlen(buffer) - 1); 
+printf("Buffer after memset: %s\n", buffer); 
+return 0; 
+} 
+
+
+
+函数名: mkdir 
+功 能: 建立一个目录 
+用 法: int mkdir(char *pathname); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int status; 
+
+clrscr(); 
+status = mkdir("asdfjklm"); 
+(!status) ? (printf("Directory created\n")) : 
+(printf("Unable to create directory\n")); 
+
+getch(); 
+system("dir"); 
+getch(); 
+
+status = rmdir("asdfjklm"); 
+(!status) ? (printf("Directory deleted\n")) : 
+(perror("Unable to delete directory")); 
+
+return 0; 
+} 
+
+
+
+
+函数名: mktemp 
+功 能: 建立唯一的文件名 
+用 法: char *mktemp(char *template); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+/* fname defines the template for the 
+temporary file. */ 
+
+char *fname = "TXXXXXX", *ptr; 
+
+ptr = mktemp(fname); 
+printf("%s\n",ptr); 
+return 0; 
+} 
+
+
+
+函数名: MK_FP 
+功 能: 设置一个远指针 
+用 法: void far *MK_FP(unsigned seg, unsigned off); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int gd, gm, i; 
+unsigned int far *screen; 
+
+detectgraph(&gd, &gm); 
+if (gd == HERCMONO) 
+screen = MK_FP(0xB000, 0); 
+else 
+screen = MK_FP(0xB800, 0); 
+for (i=0; i<26; i++) 
+screen[i] = 0x0700 + ('a' + i); 
+return 0; 
+} 
+
+
+
+函数名: modf 
+功 能: 把数分为指数和尾数 
+用 法: double modf(double value, double *iptr); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double fraction, integer; 
+double number = 100000.567; 
+
+fraction = modf(number, &integer); 
+printf("The whole and fractional parts of %lf are %lf and %lf\n", 
+number, integer, fraction); 
+return 0; 
+} 
+
+
+
+函数名: movedata 
+功 能: 拷贝字节 
+用 法: void movedata(int segsrc, int offsrc, int segdest, 
+int offdest, unsigned numbytes); 
+程序例: 
+
+#include 
+
+#define MONO_BASE 0xB000 
+
+/* saves the contents of the monochrome screen in buffer */ 
+void save_mono_screen(char near *buffer) 
+{ 
+movedata(MONO_BASE, 0, _DS, (unsigned)buffer, 80*25*2); 
+} 
+
+int main(void) 
+{ 
+char buf[80*25*2]; 
+save_mono_screen(buf); 
+} 
+
+
+
+函数名: moverel 
+功 能: 将当前位置(CP)移动一相对距离 
+用 法: void far moverel(int dx, int dy); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+char msg[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* move the C.P. to location (20, 30) */ 
+moveto(20, 30); 
+
+/* plot a pixel at the C.P. */ 
+putpixel(getx(), gety(), getmaxcolor()); 
+
+/* create and output a message at (20, 30) */ 
+sprintf(msg, " (%d, %d)", getx(), gety()); 
+outtextxy(20, 30, msg); 
+
+/* move to a point a relative distance */ 
+/* away from the current value of C.P. */ 
+moverel(100, 100); 
+
+/* plot a pixel at the C.P. */ 
+putpixel(getx(), gety(), getmaxcolor()); 
+
+/* create and output a message at C.P. */ 
+sprintf(msg, " (%d, %d)", getx(), gety()); 
+outtext(msg); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: movetext 
+功 能: 将屏幕文本从一个矩形区域拷贝到另一个矩形区域 
+用 法: int movetext(int left, int top, int right, int bottom, 
+int newleft, int newtop); 
+程序例: 
+#include 
+#include 
+
+int main(void) 
+{ 
+char *str = "This is a test string"; 
+
+clrscr(); 
+cputs(str); 
+getch(); 
+
+movetext(1, 1, strlen(str), 2, 10, 10); 
+getch(); 
+
+return 0; 
+} 
+
+
+
+函数名: moveto 
+功 能: 将CP移到(x, y) 
+用 法: void far moveto(int x, int y); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+char msg[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* move the C.P. to location (20, 30) */ 
+moveto(20, 30); 
+
+/* plot a pixel at the C.P. */ 
+putpixel(getx(), gety(), getmaxcolor()); 
+
+/* create and output a message at (20, 30) */ 
+sprintf(msg, " (%d, %d)", getx(), gety()); 
+outtextxy(20, 30, msg); 
+
+/* move to (100, 100) */ 
+moveto(100, 100); 
+
+/* plot a pixel at the C.P. */ 
+putpixel(getx(), gety(), getmaxcolor()); 
+
+/* create and output a message at C.P. */ 
+sprintf(msg, " (%d, %d)", getx(), gety()); 
+outtext(msg); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: movemem 
+功 能: 移动一块字节 
+用 法: void movemem(void *source, void *destin, unsigned len); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char *source = "Borland International"; 
+char *destination; 
+int length; 
+
+length = strlen(source); 
+destination = malloc(length + 1); 
+movmem(source,destination,length); 
+printf("%s\n",destination); 
+
+return 0; 
+} 
+
+
+
+函数名: normvideo 
+功 能: 选择正常亮度字符 
+用 法: void normvideo(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+normvideo(); 
+cprintf("NORMAL Intensity Text\r\n"); 
+return 0; 
+} 
+
+
+
+函数名: nosound 
+功 能: 关闭PC扬声器 
+用 法: void nosound(void); 
+程序例: 
+
+/* Emits a 7-Hz tone for 10 seconds. 
+
+True story: 7 Hz is the resonant frequency of a chicken's skull cavity. 
+This was determined empirically in Australia, where a new factory 
+generating 7-Hz tones was located too close to a chicken ranch: 
+When the factory started up, all the chickens died. 
+
+Your PC may not be able to emit a 7-Hz tone. 
+*/ 
+
+int main(void) 
+{ 
+sound(7); 
+delay(10000); 
+nosound(); 
+}

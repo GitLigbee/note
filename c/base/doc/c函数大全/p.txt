@@ -1,0 +1,737 @@
+函数大全(p开头)
+
+
+函数名: parsfnm 
+功 能: 分析文件名 
+用 法: char *parsfnm (char *cmdline, struct fcb *fcbptr, int option); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char line[80]; 
+struct fcb blk; 
+
+/* get file name */ 
+printf("Enter drive and file name (no path - ie. a:file.dat)\n"); 
+gets(line); 
+
+/* put file name in fcb */ 
+if (parsfnm(line, &blk, 1) == NULL) 
+printf("Error in parsfm call\n"); 
+else 
+printf("Drive #%d Name: %11s\n", blk.fcb_drive, blk.fcb_name); 
+
+return 0; 
+} 
+
+
+
+函数名: peek 
+功 能: 检查存储单元 
+用 法: int peek(int segment, unsigned offset); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int value = 0; 
+
+printf("The current status of your keyboard is:\n"); 
+value = peek(0x0040, 0x0017); 
+if (value & 1) 
+printf("Right shift on\n"); 
+else 
+printf("Right shift off\n"); 
+
+if (value & 2) 
+printf("Left shift on\n"); 
+else 
+printf("Left shift off\n"); 
+
+if (value & 4) 
+printf("Control key on\n"); 
+else 
+printf("Control key off\n"); 
+
+if (value & 8) 
+printf("Alt key on\n"); 
+else 
+printf("Alt key off\n"); 
+
+if (value & 16) 
+printf("Scroll lock on\n"); 
+else 
+printf("Scroll lock off\n"); 
+
+if (value & 32) 
+printf("Num lock on\n"); 
+else 
+printf("Num lock off\n"); 
+
+if (value & 64) 
+printf("Caps lock on\n"); 
+else 
+printf("Caps lock off\n"); 
+
+return 0; 
+} 
+
+
+
+函数名: peekb 
+功 能: 检查存储单元 
+用 法: char peekb (int segment, unsigned offset); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int value = 0; 
+
+printf("The current status of your keyboard is:\n"); 
+value = peekb(0x0040, 0x0017); 
+if (value & 1) 
+printf("Right shift on\n"); 
+else 
+printf("Right shift off\n"); 
+
+if (value & 2) 
+printf("Left shift on\n"); 
+else 
+printf("Left shift off\n"); 
+
+if (value & 4) 
+printf("Control key on\n"); 
+else 
+printf("Control key off\n"); 
+
+if (value & 8) 
+printf("Alt key on\n"); 
+else 
+printf("Alt key off\n"); 
+
+if (value & 16) 
+printf("Scroll lock on\n"); 
+else 
+printf("Scroll lock off\n"); 
+
+if (value & 32) 
+printf("Num lock on\n"); 
+else 
+printf("Num lock off\n"); 
+
+if (value & 64) 
+printf("Caps lock on\n"); 
+else 
+printf("Caps lock off\n"); 
+
+return 0; 
+} 
+
+
+
+函数名: perror 
+功 能: 系统错误信息 
+用 法: void perror(char *string); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+FILE *fp; 
+
+fp = fopen("perror.dat", "r"); 
+if (!fp) 
+perror("Unable to open file for reading"); 
+return 0; 
+} 
+
+
+
+函数名: pieslice 
+功 能: 绘制并填充一个扇形 
+用 法: void far pieslice(int x, int stanle, int endangle, int radius); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+int stangle = 45, endangle = 135, radius = 100; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* set fill style and draw a pie slice */ 
+setfillstyle(EMPTY_FILL, getmaxcolor()); 
+pieslice(midx, midy, stangle, endangle, radius); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: poke 
+功 能: 存值到一个给定存储单元 
+用 法: void poke(int segment, int offset, int value); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+cprintf("Make sure the scroll lock key is off and press any key\r\n"); 
+getch(); 
+poke(0x0000,0x0417,16); 
+cprintf("The scroll lock is now on\r\n"); 
+return 0; 
+} 
+
+
+
+函数名: pokeb 
+功 能: 存值到一个给定存储单元 
+用 法: void pokeb(int segment, int offset, char value); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+cprintf("Make sure the scroll lock key is off and press any key\r\n"); 
+getch(); 
+pokeb(0x0000,0x0417,16); 
+cprintf("The scroll lock is now on\r\n"); 
+return 0; 
+} 
+
+
+
+函数名: poly 
+功 能: 根据参数产生一个多项式 
+用 法: double poly(double x, int n, double c[]); 
+程序例: 
+
+#include 
+#include 
+
+/* polynomial: x**3 - 2x**2 + 5x - 1 */ 
+
+int main(void) 
+{ 
+double array[] = { -1.0, 5.0, -2.0, 1.0 }; 
+double result; 
+
+result = poly(2.0, 3, array); 
+printf("The polynomial: x**3 - 2.0x**2 + 5x - 1 at 2.0 is %lf\n", 
+result); 
+return 0; 
+} 
+
+
+
+函数名: pow 
+功 能: 指数函数(x的y次方) 
+用 法: double pow(double x, double y); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double x = 2.0, y = 3.0; 
+
+printf("%lf raised to %lf is %lf\n", x, y, pow(x, y)); 
+return 0; 
+} 
+
+
+函数名: pow10 
+功 能: 指数函数(10的p次方) 
+用 法: double pow10(int p); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double p = 3.0; 
+
+printf("Ten raised to %lf is %lf\n", p, pow10(p)); 
+return 0; 
+} 
+
+
+
+函数名: printf 
+功 能: 产生格式化输出的函数 
+用 法: int printf(char *format...); 
+程序例: 
+
+#include 
+#include 
+
+#define I 555 
+#define R 5.5 
+
+int main(void) 
+{ 
+int i,j,k,l; 
+char buf[7]; 
+char *prefix = buf; 
+char tp[20]; 
+printf("prefix 6d 6o 8x 10.2e " 
+"10.2f\n"); 
+strcpy(prefix,"%"); 
+for (i = 0; i < 2; i++) 
+{ 
+for (j = 0; j < 2; j++) 
+for (k = 0; k < 2; k++) 
+for (l = 0; l < 2; l++) 
+{ 
+if (i==0) strcat(prefix,"-"); 
+if (j==0) strcat(prefix,"+"); 
+if (k==0) strcat(prefix,"#"); 
+if (l==0) strcat(prefix,"0"); 
+printf("%5s |",prefix); 
+strcpy(tp,prefix); 
+strcat(tp,"6d |"); 
+printf(tp,I); 
+strcpy(tp,""); 
+strcpy(tp,prefix); 
+strcat(tp,"6o |"); 
+printf(tp,I); 
+strcpy(tp,""); 
+strcpy(tp,prefix); 
+strcat(tp,"8x |"); 
+printf(tp,I); 
+strcpy(tp,""); 
+strcpy(tp,prefix); 
+strcat(tp,"10.2e |"); 
+printf(tp,R); 
+strcpy(tp,prefix); 
+strcat(tp,"10.2f |"); 
+printf(tp,R); 
+printf(" \n"); 
+strcpy(prefix,"%"); 
+} 
+} 
+return 0; 
+} 
+
+
+
+函数名: putc 
+功 能: 输出一字符到指定流中 
+用 法: int putc(int ch, FILE *stream); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+char msg[] = "Hello world\n"; 
+int i = 0; 
+
+while (msg[i]) 
+putc(msg[i++], stdout); 
+return 0; 
+} 
+
+
+
+函数名: putch 
+功 能: 输出字符到控制台 
+用 法: int putch(int ch); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char ch = 0; 
+
+printf("Input a string:"); 
+while ((ch != '\r')) 
+{ 
+ch = getch(); 
+putch(ch); 
+} 
+return 0; 
+} 
+
+
+
+函数名: putchar 
+功 能: 在stdout上输出字符 
+用 法: int putchar(int ch); 
+程序例: 
+
+#include 
+
+/* define some box-drawing characters */ 
+#define LEFT_TOP 0xDA 
+#define RIGHT_TOP 0xBF 
+#define HORIZ 0xC4 
+#define VERT 0xB3 
+#define LEFT_BOT 0xC0 
+#define RIGHT_BOT 0xD9 
+
+int main(void) 
+{ 
+char i, j; 
+
+/* draw the top of the box */ 
+putchar(LEFT_TOP); 
+for (i=0; i<10; i++) 
+putchar(HORIZ); 
+putchar(RIGHT_TOP); 
+putchar('\n'); 
+
+/* draw the middle */ 
+for (i=0; i<4; i++) 
+{ 
+putchar(VERT); 
+for (j=0; j<10; j++) 
+putchar(' '); 
+putchar(VERT); 
+putchar('\n'); 
+} 
+
+/* draw the bottom */ 
+putchar(LEFT_BOT); 
+for (i=0; i<10; i++) 
+putchar(HORIZ); 
+putchar(RIGHT_BOT); 
+putchar('\n'); 
+
+return 0; 
+} 
+
+
+
+函数名: putenv 
+功 能: 把字符串加到当前环境中 
+用 法: int putenv(char *envvar); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char *path, *ptr; 
+int i = 0; 
+
+/* get the current path environment */ 
+ptr = getenv("PATH"); 
+
+/* set up new path */ 
+path = malloc(strlen(ptr)+15); 
+strcpy(path,"PATH="); 
+strcat(path,ptr); 
+strcat(path,";c:\\temp"); 
+
+/* replace the current path and display current environment */ 
+putenv(path); 
+while (environ[i]) 
+printf("%s\n",environ[i++]); 
+
+return 0; 
+} 
+
+
+
+函数名: putimage 
+功 能: 在屏幕上输出一个位图 
+用 法: void far putimage(int x, int y, void far *bitmap, int op); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+#define ARROW_SIZE 10 
+
+void draw_arrow(int x, int y); 
+
+int main(void) 
+{ 
+/* request autodetection */ 
+int gdriver = DETECT, gmode, errorcode; 
+void *arrow; 
+int x, y, maxx; 
+unsigned int size; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+maxx = getmaxx(); 
+x = 0; 
+y = getmaxy() / 2; 
+
+/* draw the image to be grabbed */ 
+draw_arrow(x, y); 
+
+/* calculate the size of the image */ 
+size = imagesize(x, y-ARROW_SIZE, x+(4*ARROW_SIZE), y+ARROW_SIZE); 
+
+/* allocate memory to hold the image */ 
+arrow = malloc(size); 
+
+/* grab the image */ 
+getimage(x, y-ARROW_SIZE, x+(4*ARROW_SIZE), y+ARROW_SIZE, arrow); 
+
+/* repeat until a key is pressed */ 
+while (!kbhit()) 
+{ 
+/* erase old image */ 
+putimage(x, y-ARROW_SIZE, arrow, XOR_PUT); 
+
+x += ARROW_SIZE; 
+if (x >= maxx) 
+x = 0; 
+
+/* plot new image */ 
+putimage(x, y-ARROW_SIZE, arrow, XOR_PUT); 
+} 
+
+/* clean up */ 
+free(arrow); 
+closegraph(); 
+return 0; 
+} 
+
+void draw_arrow(int x, int y) 
+{ 
+/* draw an arrow on the screen */ 
+moveto(x, y); 
+linerel(4*ARROW_SIZE, 0); 
+linerel(-2*ARROW_SIZE, -1*ARROW_SIZE); 
+linerel(0, 2*ARROW_SIZE); 
+linerel(2*ARROW_SIZE, -1*ARROW_SIZE); 
+} 
+
+
+
+函数名: putpixel 
+功 能: 在指定位置画一像素 
+用 法: void far putpixel (int x, int y, int pixelcolor); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+#define PIXEL_COUNT 1000 
+#define DELAY_TIME 100 /* in milliseconds */ 
+
+int main(void) 
+{ 
+/* request autodetection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int i, x, y, color, maxx, maxy, maxcolor, seed; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+maxx = getmaxx() + 1; 
+maxy = getmaxy() + 1; 
+maxcolor = getmaxcolor() + 1; 
+
+while (!kbhit()) 
+{ 
+/* seed the random number generator */ 
+seed = random(32767); 
+srand(seed); 
+for (i=0; i { 
+x = random(maxx); 
+y = random(maxy); 
+color = random(maxcolor); 
+putpixel(x, y, color); 
+} 
+
+delay(DELAY_TIME); 
+srand(seed); 
+for (i=0; i { 
+x = random(maxx); 
+y = random(maxy); 
+color = random(maxcolor); 
+if (color == getpixel(x, y)) 
+putpixel(x, y, 0); 
+} 
+} 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: puts 
+功 能: 送一字符串到流中 
+用 法: int puts(char *string); 
+程序例: 
+
+#include 
+int main(void) 
+{ 
+char string[] = "This is an example output string\n"; 
+
+puts(string); 
+return 0; 
+} 
+
+
+
+函数名: puttext 
+功 能: 将文本从存储区拷贝到屏幕 
+用 法: int puttext(int left, int top, int right, int bottom, void *source); 
+程序例: 
+
+#include 
+int main(void) 
+{ 
+char buffer[512]; 
+
+/* put some text to the console */ 
+clrscr(); 
+gotoxy(20, 12); 
+cprintf("This is a test. Press any key to continue ..."); 
+getch(); 
+
+/* grab screen contents */ 
+gettext(20, 12, 36, 21,buffer); 
+clrscr(); 
+
+/* put selected characters back to the screen */ 
+gotoxy(20, 12); 
+puttext(20, 12, 36, 21, buffer); 
+getch(); 
+
+return 0; 
+} 
+
+
+
+函数名: putw 
+功 能: 把一字符或字送到流中 
+用 法: int putw(int w, FILE *stream); 
+程序例: 
+
+#include 
+#include 
+
+#define FNAME "test.$$$" 
+
+int main(void) 
+{ 
+FILE *fp; 
+int word; 
+
+/* place the word in a file */ 
+fp = fopen(FNAME, "wb"); 
+if (fp == NULL) 
+{ 
+printf("Error opening file %s\n", FNAME); 
+exit(1); 
+} 
+
+word = 94; 
+putw(word,fp); 
+if (ferror(fp)) 
+printf("Error writing to file\n"); 
+else 
+printf("Successful write\n"); 
+fclose(fp); 
+
+/* reopen the file */ 
+fp = fopen(FNAME, "rb"); 
+if (fp == NULL) 
+{ 
+printf("Error opening file %s\n", FNAME); 
+exit(1); 
+} 
+
+/* extract the word */ 
+word = getw(fp); 
+if (ferror(fp)) 
+printf("Error reading file\n"); 
+else 
+printf("Successful read: word = %d\n", word); 
+
+/* clean up */ 
+fclose(fp); 
+unlink(FNAME); 
+
+return 0; 
+} 

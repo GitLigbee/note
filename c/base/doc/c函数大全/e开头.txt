@@ -1,0 +1,279 @@
+
+函数大全(e开头)
+
+
+
+函数名: ecvt 
+功 能: 把一个浮点数转换为字符串 
+用 法: char ecvt(double value, int ndigit, int *decpt, int *sign); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char *string; 
+double value; 
+int dec, sign; 
+int ndig = 10; 
+
+clrscr(); 
+value = 9.876; 
+string = ecvt(value, ndig, &dec, &sign); 
+printf("string = %s dec = %d \ 
+sign = %d\n", string, dec, sign); 
+
+value = -123.45; 
+ndig= 15; 
+string = ecvt(value,ndig,&dec,&sign); 
+printf("string = %s dec = %d sign = %d\n", 
+string, dec, sign); 
+
+
+value = 0.6789e5; /* scientific 
+notation */ 
+ndig = 5; 
+string = ecvt(value,ndig,&dec,&sign); 
+printf("string = %s dec = %d\ 
+sign = %d\n", string, dec, sign); 
+
+return 0; 
+} 
+
+
+
+函数名: ellipse 
+功 能: 画一椭圆 
+用 法: void far ellipse(int x, int y, int stangle, int endangle, 
+int xradius, int yradius); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+int stangle = 0, endangle = 360; 
+int xradius = 100, yradius = 50; 
+
+/* initialize graphics, local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) 
+/* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); 
+/* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+setcolor(getmaxcolor()); 
+
+/* draw ellipse */ 
+ellipse(midx, midy, stangle, endangle, 
+xradius, yradius); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: enable 
+功 能: 开放硬件中断 
+用 法: void enable(void); 
+程序例: 
+
+/* ** NOTE: 
+This is an interrupt service routine. You can NOT compile this program 
+with Test Stack Overflow turned on and get an executable file which will 
+operate correctly. 
+*/ 
+
+#include 
+#include 
+#include 
+
+/* The clock tick interrupt */ 
+#define INTR 0X1C 
+
+void interrupt ( *oldhandler)(void); 
+
+int count=0; 
+
+void interrupt handler(void) 
+{ 
+/* 
+disable interrupts during the handling of the interrupt 
+*/ 
+disable(); 
+/* increase the global counter */ 
+count++; 
+/* 
+re enable interrupts at the end of the handler 
+*/ 
+enable(); 
+/* call the old routine */ 
+oldhandler(); 
+} 
+
+int main(void) 
+{ 
+/* save the old interrupt vector */ 
+oldhandler = getvect(INTR); 
+
+/* install the new interrupt handler */ 
+setvect(INTR, handler); 
+
+/* loop until the counter exceeds 20 */ 
+while (count < 20) 
+printf("count is %d\n",count); 
+
+/* reset the old interrupt handler */ 
+setvect(INTR, oldhandler); 
+
+return 0; 
+} 
+
+
+
+函数名: eof 
+功 能: 检测文件结束 
+用 法: int eof(int *handle); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char msg[] = "This is a test"; 
+char ch; 
+
+/* create a file */ 
+handle = open("DUMMY.FIL", 
+O_CREAT | O_RDWR, 
+S_IREAD | S_IWRITE); 
+
+/* write some data to the file */ 
+write(handle, msg, strlen(msg)); 
+
+/* seek to the beginning of the file */ 
+lseek(handle, 0L, SEEK_SET); 
+
+/* 
+reads chars from the file until hit EOF 
+*/ 
+do 
+{ 
+read(handle, &ch, 1); 
+printf("%c", ch); 
+} while (!eof(handle)); 
+
+close(handle); 
+return 0; 
+} 
+
+
+
+函数名: exec... 
+功 能: 装入并运行其它程序的函数 
+用 法: int execl(char *pathname, char *arg0, arg1, ..., argn, NULL); 
+int execle(char *pathname, char *arg0, arg1, ..., argn, NULL, 
+char *envp[]); 
+int execlp(char *pathname, char *arg0, arg1, .., NULL); 
+int execple(char *pathname, char *arg0, arg1, ..., NULL, 
+char *envp[]); 
+int execv(char *pathname, char *argv[]); 
+int execve(char *pathname, char *argv[], char *envp[]); 
+int execvp(char *pathname, char *argv[]); 
+int execvpe(char *pathname, char *argv[], char *envp[]); 
+程序例: 
+
+/* execv example */ 
+#include 
+#include 
+#include 
+
+void main(int argc, char *argv[]) 
+{ 
+int i; 
+
+printf("Command line arguments:\n"); 
+for (i=0; i printf("[%2d] : %s\n", i, argv[i]); 
+
+printf("About to exec child with arg1 arg2 ...\n"); 
+execv("CHILD.EXE", argv); 
+
+perror("exec error"); 
+
+exit(1); 
+} 
+
+
+
+函数名: exit 
+功 能: 终止程序 
+用 法: void exit(int status); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int status; 
+
+printf("Enter either 1 or 2\n"); 
+status = getch(); 
+/* Sets DOS errorlevel */ 
+exit(status - '0'); 
+
+/* Note: this line is never reached */ 
+return 0; 
+} 
+
+
+
+函数名: exp 
+功 能: 指数函数 
+用 法: double exp(double x); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double result; 
+double x = 4.0; 
+
+result = exp(x); 
+printf("'e' raised to the power \ 
+of %lf (e ^ %lf) = %lf\n", 
+x, x, result); 
+
+return 0; 
+}
+

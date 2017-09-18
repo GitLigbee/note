@@ -1,0 +1,884 @@
+函数名: cabs 
+功 能: 计算复数的绝对值 
+用 法: double cabs(struct complex z); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+struct complex z; 
+double val; 
+
+z.x = 2.0; 
+z.y = 1.0; 
+val = cabs(z); 
+
+printf("The absolute value of %.2lfi %.2lfj is %.2lf", z.x, z.y, val); 
+return 0; 
+} 
+
+
+
+
+函数名: calloc 
+功 能: 分配主存储器 
+用 法: void *calloc(size_t nelem, size_t elsize); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char *str = NULL; 
+
+/* allocate memory for string */ 
+str = calloc(10, sizeof(char)); 
+
+/* copy "Hello" into string */ 
+strcpy(str, "Hello"); 
+
+/* display string */ 
+printf("String is %s\n", str); 
+
+/* free memory */ 
+free(str); 
+
+return 0; 
+} 
+
+
+
+
+函数名: ceil 
+功 能: 向上舍入 
+用 法: double ceil(double x); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double number = 123.54; 
+double down, up; 
+
+down = floor(number); 
+up = ceil(number); 
+
+printf("original number %5.2lf\n", number); 
+printf("number rounded down %5.2lf\n", down); 
+printf("number rounded up %5.2lf\n", up); 
+
+return 0; 
+} 
+
+
+
+
+函数名: cgets 
+功 能: 从控制台读字符串 
+用 法: char *cgets(char *str); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char buffer[83]; 
+char *p; 
+
+/* There's space for 80 characters plus the NULL terminator */ 
+buffer[0] = 81; 
+
+printf("Input some chars:"); 
+p = cgets(buffer); 
+printf("\ncgets read %d characters: \"%s\"\n", buffer[1], p); 
+printf("The returned pointer is %p, buffer[0] is at %p\n", p, &buffer); 
+
+/* Leave room for 5 characters plus the NULL terminator */ 
+buffer[0] = 6; 
+
+printf("Input some chars:"); 
+p = cgets(buffer); 
+printf("\ncgets read %d characters: \"%s\"\n", buffer[1], p); 
+printf("The returned pointer is %p, buffer[0] is at %p\n", p, &buffer); 
+return 0; 
+} 
+
+
+
+
+函数名: chdir 
+功 能: 改变工作目录 
+用 法: int chdir(const char *path); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+char old_dir[MAXDIR]; 
+char new_dir[MAXDIR]; 
+
+int main(void) 
+{ 
+if (getcurdir(0, old_dir)) 
+{ 
+perror("getcurdir()"); 
+exit(1); 
+} 
+printf("Current directory is: \\%s\n", old_dir); 
+
+if (chdir("\\")) 
+{ 
+perror("chdir()"); 
+exit(1); 
+} 
+
+if (getcurdir(0, new_dir)) 
+{ 
+perror("getcurdir()"); 
+exit(1); 
+} 
+printf("Current directory is now: \\%s\n", new_dir); 
+
+printf("\nChanging back to orignal directory: \\%s\n", old_dir); 
+if (chdir(old_dir)) 
+{ 
+perror("chdir()"); 
+exit(1); 
+} 
+
+return 0; 
+} 
+
+
+
+函数名: _chmod, chmod 
+功 能: 改变文件的访问方式 
+用 法: int chmod(const char *filename, int permiss); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+void make_read_only(char *filename); 
+
+int main(void) 
+{ 
+make_read_only("NOTEXIST.FIL"); 
+make_read_only("MYFILE.FIL"); 
+return 0; 
+} 
+
+void make_read_only(char *filename) 
+{ 
+int stat; 
+
+stat = chmod(filename, S_IREAD); 
+if (stat) 
+printf("Couldn't make %s read-only\n", filename); 
+else 
+printf("Made %s read-only\n", filename); 
+} 
+
+
+
+
+函数名: chsize 
+功 能: 改变文件大小 
+用 法: int chsize(int handle, long size); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char buf[11] = "0123456789"; 
+
+/* create text file containing 10 bytes */ 
+handle = open("DUMMY.FIL", O_CREAT); 
+write(handle, buf, strlen(buf)); 
+
+/* truncate the file to 5 bytes in size */ 
+chsize(handle, 5); 
+
+/* close the file */ 
+close(handle); 
+return 0; 
+} 
+
+
+
+函数名: circle 
+功 能: 在给定半径以(x, y)为圆心画圆 
+用 法: void far circle(int x, int y, int radius); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+int radius = 100; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+setcolor(getmaxcolor()); 
+
+/* draw the circle */ 
+circle(midx, midy, radius); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: cleardevice 
+功 能: 清除图形屏幕 
+用 法: void far cleardevice(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+setcolor(getmaxcolor()); 
+
+/* for centering screen messages */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+
+/* output a message to the screen */ 
+outtextxy(midx, midy, "press any key to clear the screen:"); 
+
+/* wait for a key */ 
+getch(); 
+
+/* clear the screen */ 
+cleardevice(); 
+
+/* output another message */ 
+outtextxy(midx, midy, "press any key to quit:"); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: clearerr 
+功 能: 复位错误标志 
+用 法:void clearerr(FILE *stream); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+FILE *fp; 
+char ch; 
+
+/* open a file for writing */ 
+fp = fopen("DUMMY.FIL", "w"); 
+
+/* force an error condition by attempting to read */ 
+ch = fgetc(fp); 
+printf("%c\n",ch); 
+
+if (ferror(fp)) 
+{ 
+/* display an error message */ 
+printf("Error reading from DUMMY.FIL\n"); 
+
+/* reset the error and EOF indicators */ 
+clearerr(fp); 
+} 
+
+fclose(fp); 
+return 0; 
+} 
+
+
+
+
+函数名: clearviewport 
+功 能: 清除图形视区 
+用 法: void far clearviewport(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+#define CLIP_ON 1 /* activates clipping in viewport */ 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int ht; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+setcolor(getmaxcolor()); 
+ht = textheight("W"); 
+
+/* message in default full-screen viewport */ 
+outtextxy(0, 0, "* <-- (0, 0) in default viewport"); 
+
+/* create a smaller viewport */ 
+setviewport(50, 50, getmaxx()-50, getmaxy()-50, CLIP_ON); 
+
+/* display some messages */ 
+outtextxy(0, 0, "* <-- (0, 0) in smaller viewport"); 
+outtextxy(0, 2*ht, "Press any key to clear viewport:"); 
+
+/* wait for a key */ 
+getch(); 
+
+/* clear the viewport */ 
+clearviewport(); 
+
+/* output another message */ 
+outtextxy(0, 0, "Press any key to quit:"); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: _close, close 
+功 能: 关闭文件句柄 
+用 法: int close(int handle); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+main() 
+{ 
+int handle; 
+char buf[11] = "0123456789"; 
+
+/* create a file containing 10 bytes */ 
+handle = open("NEW.FIL", O_CREAT); 
+if (handle > -1) 
+{ 
+write(handle, buf, strlen(buf)); 
+
+/* close the file */ 
+close(handle); 
+} 
+else 
+{ 
+printf("Error opening file\n"); 
+} 
+return 0; 
+} 
+
+
+
+
+函数名: clock 
+功 能: 确定处理器时间 
+用 法: clock_t clock(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+clock_t start, end; 
+start = clock(); 
+
+delay(2000); 
+
+end = clock(); 
+printf("The time was: %f\n", (end - start) / CLK_TCK); 
+
+return 0; 
+} 
+
+
+
+
+函数名: closegraph 
+功 能: 关闭图形系统 
+用 法: void far closegraph(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int x, y; 
+
+/* initialize graphics mode */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+
+if (errorcode != grOk) /* an error 
+occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+x = getmaxx() / 2; 
+y = getmaxy() / 2; 
+
+/* output a message */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(x, y, "Press a key to close the graphics system:"); 
+
+/* wait for a key */ 
+getch(); 
+
+/* closes down the graphics system */ 
+closegraph(); 
+
+printf("We're now back in text mode.\n"); 
+printf("Press any key to halt:"); 
+getch(); 
+return 0; 
+} 
+
+
+
+
+函数名: clreol 
+功 能: 在文本窗口中清除字符到行末 
+用 法: void clreol(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+
+{ 
+clrscr(); 
+cprintf("The function CLREOL clears all characters from the\r\n"); 
+cprintf("cursor position to the end of the line within the\r\n"); 
+cprintf("current text window, without moving the cursor.\r\n"); 
+cprintf("Press any key to continue . . ."); 
+gotoxy(14, 4); 
+getch(); 
+
+clreol(); 
+getch(); 
+
+return 0; 
+} 
+
+
+
+
+函数名: clrscr 
+功 能: 清除文本模式窗口 
+用 法: void clrscr(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+int i; 
+
+clrscr(); 
+for (i = 0; i < 20; i++) 
+cprintf("%d\r\n", i); 
+cprintf("\r\nPress any key to clear screen"); 
+getch(); 
+
+clrscr(); 
+cprintf("The screen has been cleared!"); 
+getch(); 
+
+return 0; 
+} 
+
+
+
+
+函数名: coreleft 
+功 能: 返回未使用内存的大小 
+用 法: unsigned coreleft(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+printf("The difference between the highest allocated block and\n"); 
+printf("the top of the heap is: %lu bytes\n", (unsigned long) coreleft()); 
+
+return 0; 
+} 
+
+
+函数名: cos 
+功 能: 余弦函数 
+用 法: double cos(double x); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double result; 
+double x = 0.5; 
+
+result = cos(x); 
+printf("The cosine of %lf is %lf\n", x, result); 
+return 0; 
+} 
+
+
+
+
+函数名: cosh 
+功 能: 双曲余弦函数 
+用 法: dluble cosh(double x); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double result; 
+double x = 0.5; 
+
+result = cosh(x); 
+printf("The hyperboic cosine of %lf is %lf\n", x, result); 
+return 0; 
+} 
+
+
+
+
+函数名: country 
+功 能: 返回与国家有关的信息 
+用 法: struct COUNTRY *country(int countrycode, struct country *country); 
+程序例: 
+
+#include 
+#include 
+
+#define USA 0 
+
+int main(void) 
+{ 
+struct COUNTRY country_info; 
+
+country(USA, &country_info); 
+printf("The currency symbol for the USA is: %s\n", 
+country_info.co_curr); 
+return 0; 
+} 
+
+
+
+
+函数名: cprintf 
+功 能: 送格式化输出至屏幕 
+用 法: int cprintf(const char *format[, argument, ...]); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+/* clear the screen */ 
+clrscr(); 
+
+/* create a text window */ 
+window(10, 10, 80, 25); 
+
+/* output some text in the window */ 
+cprintf("Hello world\r\n"); 
+
+/* wait for a key */ 
+getch(); 
+return 0; 
+} 
+
+
+
+
+函数名: cputs 
+功 能: 写字符到屏幕 
+用 法: void cputs(const char *string); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+/* clear the screen */ 
+clrscr(); 
+
+/* create a text window */ 
+window(10, 10, 80, 25); 
+
+/* output some text in the window */ 
+cputs("This is within the window\r\n"); 
+
+/* wait for a key */ 
+getch(); 
+return 0; 
+} 
+
+
+
+
+函数名: _creat creat 
+功 能: 创建一个新文件或重写一个已存在的文件 
+用 法: int creat (const char *filename, int permiss); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char buf[11] = "0123456789"; 
+
+/* change the default file mode from text to binary */ 
+_fmode = O_BINARY; 
+
+/* create a binary file for reading and writing */ 
+handle = creat("DUMMY.FIL", S_IREAD | S_IWRITE); 
+
+/* write 10 bytes to the file */ 
+write(handle, buf, strlen(buf)); 
+
+/* close the file */ 
+close(handle); 
+return 0; 
+} 
+
+
+函数名: creatnew 
+功 能: 创建一个新文件 
+用 法: int creatnew(const char *filename, int attrib); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char buf[11] = "0123456789"; 
+
+/* attempt to create a file that doesn't already exist */ 
+handle = creatnew("DUMMY.FIL", 0); 
+
+if (handle == -1) 
+printf("DUMMY.FIL already exists.\n"); 
+else 
+{ 
+printf("DUMMY.FIL successfully created.\n"); 
+write(handle, buf, strlen(buf)); 
+close(handle); 
+} 
+return 0; 
+} 
+
+
+
+
+函数名: creattemp 
+功 能: 创建一个新文件或重写一个已存在的文件 
+用 法: int creattemp(const char *filename, int attrib); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char pathname[128]; 
+
+strcpy(pathname, "\\"); 
+
+/* create a unique file in the root directory */ 
+handle = creattemp(pathname, 0); 
+
+printf("%s was the unique file created.\n", pathname); 
+close(handle); 
+return 0; 
+} 
+
+
+
+
+函数名: cscanf 
+功 能: 从控制台执行格式化输入 
+用 法: int cscanf(char *format[,argument, ...]); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+char string[80]; 
+
+/* clear the screen */ 
+clrscr(); 
+
+/* Prompt the user for input */ 
+cprintf("Enter a string with no spaces:"); 
+
+/* read the input */ 
+cscanf("%s", string); 
+
+/* display what was read */ 
+cprintf("\r\nThe string entered is: %s", string); 
+return 0; 
+} 
+
+
+
+
+函数名: ctime 
+功 能: 把日期和时间转换为字符串 
+用 法: char *ctime(const time_t *time); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+time_t t; 
+
+time(&t); 
+printf("Today's date and time: %s\n", ctime(&t)); 
+return 0; 
+} 
+
+
+
+
+函数名: ctrlbrk 
+功 能: 设置Ctrl-Break处理程序 
+用 法: void ctrlbrk(*fptr)(void); 
+程序例: 
+
+#include 
+#include 
+
+#define ABORT 0 
+
+int c_break(void) 
+{ 
+printf("Control-Break pressed. Program aborting ...\n"); 
+return (ABORT); 
+} 
+
+int main(void) 
+{ 
+ctrlbrk(c_break); 
+for(;;) 
+{ 
+printf("Looping... Press to quit:\n"); 
+} 
+return 0; 
+} 
+

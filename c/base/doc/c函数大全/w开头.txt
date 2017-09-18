@@ -1,0 +1,118 @@
+函数大全(w开头)
+
+
+函数名: wherex 
+功 能: 返回窗口内水平光标位置 
+用 法: int wherex(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+gotoxy(10,10); 
+cprintf("Current location is X: %d Y: %d\r\n", wherex(), wherey()); 
+getch(); 
+
+return 0; 
+} 
+
+
+
+
+函数名: wherey 
+功 能: 返回窗口内垂直光标位置 
+用 法: int wherey(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+gotoxy(10,10); 
+cprintf("Current location is X: %d Y: %d\r\n", wherex(), wherey()); 
+getch(); 
+
+return 0; 
+} 
+
+
+
+
+函数名: window 
+功 能: 定义活动文本模式窗口 
+用 法: void window(int left, int top, int right, int bottom); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+
+window(10,10,40,11); 
+textcolor(BLACK); 
+textbackground(WHITE); 
+cprintf("This is a test\r\n"); 
+
+return 0; 
+} 
+
+
+
+
+函数名: write 
+功 能: 写到一文件中 
+用 法: int write(int handel, void *buf, int nbyte); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char string[40]; 
+int length, res; 
+
+/* 
+Create a file named "TEST.$$$" in the current directory and write 
+a string to it. If "TEST.$$$" already exists, it will be overwritten. 
+*/ 
+
+if ((handle = open("TEST.$$$", O_WRONLY | O_CREAT | O_TRUNC, 
+S_IREAD | S_IWRITE)) == -1) 
+{ 
+printf("Error opening file.\n"); 
+exit(1); 
+} 
+
+strcpy(string, "Hello, world!\n"); 
+length = strlen(string); 
+
+if ((res = write(handle, string, length)) != length) 
+{ 
+printf("Error writing to the file.\n"); 
+exit(1); 
+} 
+printf("Wrote %d bytes to the file.\n", res); 
+
+close(handle); 
+return 0; 
+} 
+
+struct xfcb {
+
+char xfcb_flag; /* Contains 0xff to indicate xfcb */
+
+char xfcb_resv[5]; /* Reserved for DOS */
+
+char xfcb_attr; /* Search attribute */
+
+struct fcb xfcb_fcb; /* The standard fcb */
+

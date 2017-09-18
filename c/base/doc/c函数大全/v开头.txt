@@ -1,0 +1,238 @@
+函数名: vfprintf 
+功 能: 送格式化输出到一流中 
+用 法: int vfprintf(FILE *stream, char *format, va_list param); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+FILE *fp; 
+
+int vfpf(char *fmt, ...) 
+{ 
+va_list argptr; 
+int cnt; 
+
+va_start(argptr, fmt); 
+cnt = vfprintf(fp, fmt, argptr); 
+va_end(argptr); 
+
+return(cnt); 
+} 
+
+int main(void) 
+{ 
+int inumber = 30; 
+float fnumber = 90.0; 
+char string[4] = "abc"; 
+
+fp = tmpfile(); 
+if (fp == NULL) 
+{ 
+perror("tmpfile() call"); 
+exit(1); 
+} 
+
+vfpf("%d %f %s", inumber, fnumber, string); 
+rewind(fp); 
+fscanf(fp,"%d %f %s", &inumber, &fnumber, string); 
+printf("%d %f %s\n", inumber, fnumber, string); 
+fclose(fp); 
+
+return 0; 
+} 
+
+
+
+
+函数名: vfscanf 
+功 能: 从流中执行格式化输入 
+用 法: int vfscanf(FILE *stream, char *format, va_list param); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+FILE *fp; 
+
+int vfsf(char *fmt, ...) 
+{ 
+va_list argptr; 
+int cnt; 
+
+va_start(argptr, fmt); 
+cnt = vfscanf(fp, fmt, argptr); 
+va_end(argptr); 
+
+return(cnt); 
+} 
+
+int main(void) 
+{ 
+int inumber = 30; 
+float fnumber = 90.0; 
+char string[4] = "abc"; 
+
+fp = tmpfile(); 
+if (fp == NULL) 
+{ 
+perror("tmpfile() call"); 
+exit(1); 
+} 
+fprintf(fp,"%d %f %s\n",inumber,fnumber,string); 
+rewind(fp); 
+
+vfsf("%d %f %s",&inumber,&fnumber,string); 
+printf("%d %f %s\n",inumber,fnumber,string); 
+fclose(fp); 
+
+return 0; 
+} 
+
+
+
+函数名: vprintf 
+功 能: 送格式化输出到stdout中 
+用 法: int vprintf(char *format, va_list param); 
+程序例: 
+
+#include 
+#include 
+
+int vpf(char *fmt, ...) 
+{ 
+va_list argptr; 
+int cnt; 
+
+va_start(argptr, format); 
+cnt = vprintf(fmt, argptr); 
+va_end(argptr); 
+
+return(cnt); 
+} 
+
+int main(void) 
+{ 
+int inumber = 30; 
+float fnumber = 90.0; 
+char *string = "abc"; 
+
+vpf("%d %f %s\n",inumber,fnumber,string); 
+
+return 0; 
+} 
+
+
+
+函数名: vscanf 
+功 能: 从stdin中执行格式化输入 
+用 法: int vscanf(char *format, va_list param); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int vscnf(char *fmt, ...) 
+{ 
+va_list argptr; 
+int cnt; 
+
+printf("Enter an integer, a float, and a string (e.g. i,f,s,)\n"); 
+va_start(argptr, fmt); 
+cnt = vscanf(fmt, argptr); 
+va_end(argptr); 
+
+return(cnt); 
+} 
+
+int main(void) 
+{ 
+int inumber; 
+float fnumber; 
+char string[80]; 
+
+vscnf("%d, %f, %s", &inumber, &fnumber, string); 
+printf("%d %f %s\n", inumber, fnumber, string); 
+
+return 0; 
+} 
+
+
+
+
+函数名: vsprintf 
+功 能: 送格式化输出到串中 
+用 法: int vsprintf(char *string, char *format, va_list param); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+char buffer[80]; 
+
+int vspf(char *fmt, ...) 
+{ 
+va_list argptr; 
+int cnt; 
+
+va_start(argptr, fmt); 
+cnt = vsprintf(buffer, fmt, argptr); 
+va_end(argptr); 
+
+return(cnt); 
+} 
+
+int main(void) 
+{ 
+int inumber = 30; 
+float fnumber = 90.0; 
+char string[4] = "abc"; 
+
+vspf("%d %f %s", inumber, fnumber, string); 
+printf("%s\n", buffer); 
+return 0; 
+} 
+
+
+
+
+函数名: vsscanf 
+功 能: 从流中执行格式化输入 
+用 法: int vsscanf(char *s, char *format, va_list param); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+char buffer[80] = "30 90.0 abc"; 
+
+int vssf(char *fmt, ...) 
+{ 
+va_list argptr; 
+int cnt; 
+
+fflush(stdin); 
+
+va_start(argptr, fmt); 
+cnt = vsscanf(buffer, fmt, argptr); 
+va_end(argptr); 
+
+return(cnt); 
+} 
+
+int main(void) 
+{ 
+int inumber; 
+float fnumber; 
+char string[80]; 
+
+vssf("%d %f %s", &inumber, &fnumber, string); 
+printf("%d %f %s\n", inumber, fnumber, string); 
+return 0; 
+} 
+

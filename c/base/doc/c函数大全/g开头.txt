@@ -1,0 +1,2431 @@
+函数名: gcvt 
+功 能: 把浮点数转换成字符串 
+用 法: char *gcvt(double value, int ndigit, char *buf); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char str[25]; 
+double num; 
+int sig = 5; /* significant digits */ 
+
+/* a regular number */ 
+num = 9.876; 
+gcvt(num, sig, str); 
+printf("string = %s\n", str); 
+
+/* a negative number */ 
+num = -123.4567; 
+gcvt(num, sig, str); 
+printf("string = %s\n", str); 
+
+/* scientific notation */ 
+num = 0.678e5; 
+gcvt(num, sig, str); 
+printf("string = %s\n", str); 
+
+return(0); 
+} 
+
+
+
+
+函数名: geninterrupt 
+功 能: 产生一个软中断 
+用 法: void geninterrupt(int intr_num); 
+程序例: 
+
+#include 
+#include 
+
+/* function prototype */ 
+void writechar(char ch); 
+
+int main(void) 
+{ 
+clrscr(); 
+gotoxy(80,25); 
+writechar('*'); 
+getch(); 
+return 0; 
+} 
+
+/* 
+outputs a character at the current cursor 
+position using the video BIOS to avoid the 
+scrolling of the screen when writing to 
+location (80,25). 
+*/ 
+
+void writechar(char ch) 
+{ 
+struct text_info ti; 
+/* grab current text settings */ 
+gettextinfo(&ti); 
+/* interrupt 0x10 sub-function 9 */ 
+_AH = 9; 
+/* character to be output */ 
+_AL = ch; 
+_BH = 0; /* video page */ 
+_BL = ti.attribute; /* video attribute */ 
+_CX = 1; /* repetition factor */ 
+geninterrupt(0x10); /* output the char */ 
+} 
+
+
+
+函数名: getarccoords 
+功 能: 取得最后一次调用arc的坐标 
+用 法: void far getarccoords(struct arccoordstype far *arccoords); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+struct arccoordstype arcinfo; 
+int midx, midy; 
+int stangle = 45, endangle = 270; 
+char sstr[80], estr[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* draw arc and get coordinates */ 
+setcolor(getmaxcolor()); 
+arc(midx, midy, stangle, endangle, 100); 
+getarccoords(&arcinfo); 
+
+/* convert arc information into strings */ 
+sprintf(sstr, "*- (%d, %d)", 
+arcinfo.xstart, arcinfo.ystart); 
+sprintf(estr, "*- (%d, %d)", 
+arcinfo.xend, arcinfo.yend); 
+
+/* output the arc information */ 
+outtextxy(arcinfo.xstart, 
+arcinfo.ystart, sstr); 
+outtextxy(arcinfo.xend, 
+arcinfo.yend, estr); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: getaspectratio 
+功 能: 返回当前图形模式的纵横比 
+用 法: void far getaspectratio(int far *xasp, int far *yasp); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int xasp, yasp, midx, midy; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+setcolor(getmaxcolor()); 
+
+/* get current aspect ratio settings */ 
+getaspectratio(&xasp, &yasp); 
+
+/* draw normal circle */ 
+circle(midx, midy, 100); 
+getch(); 
+
+/* draw wide circle */ 
+cleardevice(); 
+setaspectratio(xasp/2, yasp); 
+circle(midx, midy, 100); 
+getch(); 
+
+/* draw narrow circle */ 
+cleardevice(); 
+setaspectratio(xasp, yasp/2); 
+circle(midx, midy, 100); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: getbkcolor 
+功 能: 返回当前背景颜色 
+用 法: int far getbkcolor(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int bkcolor, midx, midy; 
+char bkname[35]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+setcolor(getmaxcolor()); 
+
+/* for centering text on the display */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+
+/* get the current background color */ 
+bkcolor = getbkcolor(); 
+
+/* convert color value into a string */ 
+itoa(bkcolor, bkname, 10); 
+strcat(bkname, 
+" is the current background color."); 
+
+/* display a message */ 
+outtextxy(midx, midy, bkname); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: getc 
+功 能: 从流中取字符 
+用 法: int getc(FILE *stream); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+char ch; 
+
+printf("Input a character:"); 
+/* read a character from the 
+standard input stream */ 
+ch = getc(stdin); 
+printf("The character input was: '%c'\n", 
+ch); 
+return 0; 
+} 
+
+
+
+
+函数名: getcbrk 
+功 能: 获取Control_break设置 
+用 法: int getcbrk(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+if (getcbrk()) 
+printf("Cntrl-brk flag is on\n"); 
+else 
+printf("Cntrl-brk flag is off\n"); 
+
+return 0; 
+} 
+
+
+
+函数名: getch 
+功 能: 从控制台无回显地取一个字符 
+用 法: int getch(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char ch; 
+
+printf("Input a character:"); 
+ch = getche(); 
+printf("\nYou input a '%c'\n", ch); 
+return 0; 
+} 
+
+
+
+函数名: getchar 
+功 能: 从stdin流中读字符 
+用 法: int getchar(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+int c; 
+
+/* Note that getchar reads from stdin and 
+is line buffered; this means it will 
+not return until you press ENTER. */ 
+
+while ((c = getchar()) != '\n') 
+printf("%c", c); 
+
+return 0; 
+} 
+
+
+
+函数名: getche 
+功 能: 从控制台取字符(带回显) 
+用 法: int getche(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char ch; 
+
+printf("Input a character:"); 
+ch = getche(); 
+printf("\nYou input a '%c'\n", ch); 
+return 0; 
+} 
+
+
+
+函数名: getcolor 
+功 能: 返回当前画线颜色 
+用 法: int far getcolor(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int color, midx, midy; 
+char colname[35]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+setcolor(getmaxcolor()); 
+
+/* for centering text on the display */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+
+/* get the current drawing color */ 
+color = getcolor(); 
+
+/* convert color value into a string */ 
+itoa(color, colname, 10); 
+strcat(colname, 
+" is the current drawing color."); 
+
+/* display a message */ 
+outtextxy(midx, midy, colname); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getcurdir 
+功 能: 取指定驱动器的当前目录 
+用 法: int getcurdir(int drive, char *direc); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+char *current_directory(char *path) 
+{ 
+strcpy(path, "X:\\"); /* fill string with form of response: X:\ */ 
+path[0] = 'A' + getdisk(); /* replace X with current drive letter */ 
+getcurdir(0, path+3); /* fill rest of string with current directory */ 
+return(path); 
+} 
+
+int main(void) 
+{ 
+char curdir[MAXPATH]; 
+
+current_directory(curdir); 
+printf("The current directory is %s\n", curdir); 
+
+return 0; 
+} 
+
+
+
+函数名: getcwd 
+功 能: 取当前工作目录 
+用 法: char *getcwd(char *buf, int n); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char buffer[MAXPATH]; 
+
+getcwd(buffer, MAXPATH); 
+printf("The current directory is: %s\n", buffer); 
+return 0; 
+} 
+
+
+
+函数名: getdate 
+功 能: 取DOS日期 
+用 法: void getdate(struct *dateblk); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+struct date d; 
+
+getdate(&d); 
+printf("The current year is: %d\n", 
+d.da_year); 
+printf("The current day is: %d\n", 
+d.da_day); 
+printf("The current month is: %d\n", 
+d.da_mon); 
+return 0; 
+} 
+
+
+
+函数名: getdefaultpalette 
+功 能: 返回调色板定义结构 
+用 法: struct palettetype *far getdefaultpalette(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int i; 
+
+/* structure for returning palette copy */ 
+struct palettetype far *pal=(void *) 0; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+setcolor(getmaxcolor()); 
+
+/* return a pointer to the default palette */ 
+pal = getdefaultpalette(); 
+
+for (i=0; i<16; i++) 
+{ 
+printf("colors[%d] = %d\n", i, 
+pal->colors[i]); 
+getch(); 
+} 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getdisk 
+功 能: 取当前磁盘驱动器号 
+用 法: int getdisk(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int disk; 
+
+disk = getdisk() + 'A'; 
+printf("The current drive is: %c\n", 
+disk); 
+return 0; 
+} 
+
+
+
+
+函数名: getdrivername 
+功 能: 返回指向包含当前图形驱动程序名字的字符串指针 
+用 法: char *getdrivename(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+
+/* stores the device driver name */ 
+char *drivername; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+setcolor(getmaxcolor()); 
+
+/* get name of the device driver in use */ 
+drivername = getdrivername(); 
+
+/* for centering text on the screen */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+
+/* output the name of the driver */ 
+outtextxy(getmaxx() / 2, getmaxy() / 2, 
+drivername); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getdta 
+功 能: 取磁盘传输地址 
+用 法: char far *getdta(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char far *dta; 
+
+dta = getdta(); 
+printf("The current disk transfer \ 
+address is: %Fp\n", dta); 
+return 0; 
+} 
+
+
+
+函数名: getenv 
+功 能: 从环境中取字符串 
+用 法: char *getenv(char *envvar); 
+程序例: 
+
+#include 
+#include 
+
+
+int main(void) 
+{ 
+char *s; 
+
+s=getenv("COMSPEC"); /* get the comspec environment parameter */ 
+printf("Command processor: %s\n",s); /* display comspec parameter */ 
+
+return 0; 
+} 
+
+
+
+
+函数名: getfat, getfatd 
+功 能: 取文件分配表信息 
+用 法: void getfat(int drive, struct fatinfo *fatblkp); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+struct fatinfo diskinfo; 
+int flag = 0; 
+
+printf("Please insert disk in drive A\n"); 
+getchar(); 
+
+getfat(1, &diskinfo); 
+/* get drive information */ 
+
+printf("\nDrive A: is "); 
+switch((unsigned char) diskinfo.fi_fatid) 
+{ 
+case 0xFD: 
+printf("360K low density\n"); 
+break; 
+
+case 0xF9: 
+printf("1.2 Meg high density\n"); 
+break; 
+
+default: 
+printf("unformatted\n"); 
+flag = 1; 
+} 
+
+if (!flag) 
+{ 
+printf(" sectors per cluster %5d\n", 
+diskinfo.fi_sclus); 
+printf(" number of clusters %5d\n", 
+diskinfo.fi_nclus); 
+printf(" bytes per sector %5d\n", 
+diskinfo.fi_bysec); 
+} 
+
+return 0; 
+} 
+
+
+
+函数名: getfillpattern 
+功 能: 将用户定义的填充模式拷贝到内存中 
+用 法: void far getfillpattern(char far *upattern); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int maxx, maxy; 
+char pattern[8] = {0x00, 0x70, 0x20, 0x27, 0x25, 0x27, 0x04, 0x04}; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+maxx = getmaxx(); 
+maxy = getmaxy(); 
+setcolor(getmaxcolor()); 
+
+/* select a user defined fill pattern */ 
+setfillpattern(pattern, getmaxcolor()); 
+
+/* fill the screen with the pattern */ 
+bar(0, 0, maxx, maxy); 
+
+getch(); 
+
+/* get the current user defined fill pattern */ 
+getfillpattern(pattern); 
+
+/* alter the pattern we grabbed */ 
+pattern[4] -= 1; 
+pattern[5] -= 3; 
+pattern[6] += 3; 
+pattern[7] -= 4; 
+
+/* select our new pattern */ 
+setfillpattern(pattern, getmaxcolor()); 
+
+/* fill the screen with the new pattern */ 
+bar(0, 0, maxx, maxy); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getfillsettings 
+功 能: 取得有关当前填充模式和填充颜色的信息 
+用 法: void far getfillsettings(struct fillsettingstype far *fillinfo); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+/ the names of the fill styles supported */ 
+char *fname[] = { "EMPTY_FILL", 
+"SOLID_FILL", 
+"LINE_FILL", 
+"LTSLASH_FILL", 
+"SLASH_FILL", 
+"BKSLASH_FILL", 
+"LTBKSLASH_FILL", 
+"HATCH_FILL", 
+"XHATCH_FILL", 
+"INTERLEAVE_FILL", 
+"WIDE_DOT_FILL", 
+"CLOSE_DOT_FILL", 
+"USER_FILL" 
+}; 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+struct fillsettingstype fillinfo; 
+int midx, midy; 
+char patstr[40], colstr[40]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* get information about current fill pattern and color */ 
+getfillsettings(&fillinfo); 
+
+/* convert fill information into strings */ 
+sprintf(patstr, "%s is the fill style.", fname[fillinfo.pattern]); 
+sprintf(colstr, "%d is the fill color.", fillinfo.color); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, patstr); 
+outtextxy(midx, midy+2*textheight("W"), colstr); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: getftime 
+功 能: 取文件日期和时间 
+用 法: int getftime(int handle, struct ftime *ftimep); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+FILE *stream; 
+struct ftime ft; 
+
+if ((stream = fopen("TEST.$$$", 
+"wt")) == NULL) 
+{ 
+fprintf(stderr, 
+"Cannot open output file.\n"); 
+return 1; 
+} 
+getftime(fileno(stream), &ft); 
+printf("File time: %u:%u:%u\n", 
+ft.ft_hour, ft.ft_min, 
+ft.ft_tsec * 2); 
+printf("File date: %u/%u/%u\n", 
+ft.ft_month, ft.ft_day, 
+ft.ft_year+1980); 
+fclose(stream); 
+return 0; 
+} 
+
+
+
+
+函数名: getgraphmode 
+功 能: 返回当前图形模式 
+用 法: int far getgraphmode(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy, mode; 
+char numname[80], modename[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* get mode number and name strings */ 
+mode = getgraphmode(); 
+sprintf(numname, 
+"%d is the current mode number.", 
+mode); 
+sprintf(modename, 
+"%s is the current graphics mode", 
+getmodename(mode)); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, numname); 
+outtextxy(midx, midy+2*textheight("W"), 
+modename); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getftime 
+功 能: 取文件日期和时间 
+用 法: int getftime(int handle, struct ftime *ftimep); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+FILE *stream; 
+struct ftime ft; 
+
+if ((stream = fopen("TEST.$$$", 
+"wt")) == NULL) 
+{ 
+fprintf(stderr, 
+"Cannot open output file.\n"); 
+return 1; 
+} 
+getftime(fileno(stream), &ft); 
+printf("File time: %u:%u:%u\n", 
+ft.ft_hour, ft.ft_min, 
+ft.ft_tsec * 2); 
+printf("File date: %u/%u/%u\n", 
+ft.ft_month, ft.ft_day, 
+ft.ft_year+1980); 
+fclose(stream); 
+return 0; 
+} 
+
+
+
+
+函数名: getgraphmode 
+功 能: 返回当前图形模式 
+用 法: int far getgraphmode(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy, mode; 
+char numname[80], modename[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* get mode number and name strings */ 
+mode = getgraphmode(); 
+sprintf(numname, 
+"%d is the current mode number.", 
+mode); 
+sprintf(modename, 
+"%s is the current graphics mode", 
+getmodename(mode)); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, numname); 
+outtextxy(midx, midy+2*textheight("W"), 
+modename); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getimage 
+功 能: 将指定区域的一个位图存到主存中 
+用 法: void far getimage(int left, int top, int right, int bottom, 
+void far *bitmap); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+void save_screen(void far *buf[4]); 
+void restore_screen(void far *buf[4]); 
+
+int maxx, maxy; 
+
+int main(void) 
+{ 
+int gdriver=DETECT, gmode, errorcode; 
+void far *ptr[4]; 
+
+/* auto-detect the graphics driver and mode */ 
+initgraph(&gdriver, &gmode, ""); 
+errorcode = graphresult(); /* check for any errors */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); 
+} 
+maxx = getmaxx(); 
+maxy = getmaxy(); 
+
+/* draw an image on the screen */ 
+rectangle(0, 0, maxx, maxy); 
+line(0, 0, maxx, maxy); 
+line(0, maxy, maxx, 0); 
+
+save_screen(ptr); /* save the current screen */ 
+getch(); /* pause screen */ 
+cleardevice(); /* clear screen */ 
+restore_screen(ptr); /* restore the screen */ 
+getch(); /* pause screen */ 
+
+closegraph(); 
+return 0; 
+} 
+
+void save_screen(void far *buf[4]) 
+{ 
+unsigned size; 
+int ystart=0, yend, yincr, block; 
+
+yincr = (maxy+1) / 4; 
+yend = yincr; 
+size = imagesize(0, ystart, maxx, yend); /* get byte size of image */ 
+
+for (block=0; block<=3; block++) 
+{ 
+if ((buf[block] = farmalloc(size)) == NULL) 
+{ 
+closegraph(); 
+printf("Error: not enough heap space in save_screen().\n"); 
+exit(1); 
+} 
+
+getimage(0, ystart, maxx, yend, buf[block]); 
+ystart = yend + 1; 
+yend += yincr + 1; 
+} 
+} 
+
+void save_screen(void far *buf[4]) 
+{ 
+unsigned size; 
+int ystart=0, yend, yincr, block; 
+
+yincr = (maxy+1) / 4; 
+yend = yincr; 
+size = imagesize(0, ystart, maxx, yend); /* get byte size of image */ 
+
+for (block=0; block<=3; block++) 
+{ 
+if ((buf[block] = farmalloc(size)) == NULL) 
+{ 
+closegraph(); 
+printf("Error: not enough heap space in save_screen().\n"); 
+exit(1); 
+} 
+
+getimage(0, ystart, maxx, yend, buf[block]); 
+ystart = yend + 1; 
+yend += yincr + 1; 
+} 
+} 
+
+void restore_screen(void far *buf[4]) 
+{ 
+int ystart=0, yend, yincr, block; 
+
+yincr = (maxy+1) / 4; 
+yend = yincr; 
+
+for (block=0; block<=3; block++) 
+{ 
+putimage(0, ystart, buf[block], COPY_PUT); 
+farfree(buf[block]); 
+ystart = yend + 1; 
+yend += yincr + 1; 
+} 
+} 
+
+
+
+函数名: getlinesettings 
+功 能: 取当前线型、模式和宽度 
+用 法: void far getlinesettings(struct linesettingstype far *lininfo): 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+/* the names of the line styles supported */ 
+char *lname[] = { "SOLID_LINE", 
+"DOTTED_LINE", 
+"CENTER_LINE", 
+"DASHED_LINE", 
+"USERBIT_LINE" 
+}; 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+struct linesettingstype lineinfo; 
+int midx, midy; 
+char lstyle[80], lpattern[80], lwidth[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* get information about current line settings */ 
+getlinesettings(&lineinfo); 
+
+/* convert line information into strings */ 
+sprintf(lstyle, "%s is the line style.", 
+lname[lineinfo.linestyle]); 
+sprintf(lpattern, "0x%X is the user-defined line pattern.", 
+lineinfo.upattern); 
+sprintf(lwidth, "%d is the line thickness.", 
+lineinfo.thickness); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, lstyle); 
+outtextxy(midx, midy+2*textheight("W"), lpattern); 
+outtextxy(midx, midy+4*textheight("W"), lwidth); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getmaxcolor 
+功 能: 返回可以传给函数setcolor的最大颜色值 
+用 法: int far getmaxcolor(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+char colstr[80]; 
+
+/* initialize graphics and local variables 
+*/ initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* grab the color info. and convert it to a string */ 
+sprintf(colstr, "This mode supports colors 0..%d", getmaxcolor()); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, colstr); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: getmaxx 
+功 能: 返回屏幕的最大x坐标 
+用 法: int far getmaxx(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+char xrange[80], yrange[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* convert max resolution values into strings */ 
+sprintf(xrange, "X values range from 0..%d", getmaxx()); 
+sprintf(yrange, "Y values range from 0..%d", getmaxy()); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, xrange); 
+outtextxy(midx, midy+textheight("W"), yrange); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getmaxy 
+功 能: 返回屏幕的最大y坐标 
+用 法: int far getmaxy(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+char xrange[80], yrange[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* convert max resolution values into strings */ 
+sprintf(xrange, "X values range from 0..%d", getmaxx()); 
+sprintf(yrange, "Y values range from 0..%d", getmaxy()); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, xrange); 
+outtextxy(midx, midy+textheight("W"), yrange); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+函数名: getmodename 
+功 能: 返回含有指定图形模式名的字符串指针 
+用 法: char *far getmodename(int mode_name); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request autodetection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy, mode; 
+char numname[80], modename[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* get mode number and name strings */ 
+mode = getgraphmode(); 
+sprintf(numname, "%d is the current mode number.", mode); 
+sprintf(modename, "%s is the current graphics mode.", getmodename(mode)); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, numname); 
+outtextxy(midx, midy+2*textheight("W"), modename); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getmoderange 
+功 能: 取给定图形驱动程序的模式范围 
+用 法: void far getmoderange(int graphdriver, int far *lomode, 
+int far *himode); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+int low, high; 
+char mrange[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* get the mode range for this driver */ 
+getmoderange(gdriver, &low, &high); 
+
+/* convert mode range info. into strings */ 
+sprintf(mrange, "This driver supports modes %d..%d", low, high); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, mrange); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getpalette 
+功 能: 返回有关当前调色板的信息 
+用 法: void far getpalette(struct palettetype far *palette); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+struct palettetype pal; 
+char psize[80], pval[20]; 
+int i, ht; 
+int y = 10; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+/* grab a copy of the palette */ 
+getpalette(&pal); 
+
+/* convert palette info. into strings */ 
+sprintf(psize, "The palette has %d \ 
+modifiable entries.", pal.size); 
+
+/* display the information */ 
+outtextxy(0, y, psize); 
+if (pal.size != 0) 
+{ 
+ht = textheight("W"); 
+y += 2*ht; 
+outtextxy(0, y, "Here are the current \ 
+values:"); 
+y += 2*ht; 
+for (i=0; i { 
+sprintf(pval, 
+"palette[%02d]: 0x%02X", i, 
+pal.colors[i]); 
+outtextxy(0, y, pval); 
+} 
+} 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+函数名: getpass 
+功 能: 读一个口令 
+用 法: char *getpass(char *prompt); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+char *password; 
+
+password = getpass("Input a password:"); 
+cprintf("The password is: %s\r\n", 
+password); 
+return 0; 
+} 
+
+
+
+
+函数名: getpixel 
+功 能: 取得指定像素的颜色 
+用 法: int far getpixel(int x, int y); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+#define PIXEL_COUNT 1000 
+#define DELAY_TIME 100 /* in milliseconds */ 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int i, x, y, color, maxx, maxy, 
+maxcolor, seed; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+/* terminate with an error code */ 
+exit(1); 
+} 
+
+maxx = getmaxx() + 1; 
+maxy = getmaxy() + 1; 
+maxcolor = getmaxcolor() + 1; 
+
+while (!kbhit()) 
+{ 
+/* seed the random number generator */ 
+seed = random(32767); 
+srand(seed); 
+for (i=0; i { 
+x = random(maxx); 
+y = random(maxy); 
+color = random(maxcolor); 
+putpixel(x, y, color); 
+} 
+
+delay(DELAY_TIME); 
+srand(seed); 
+for (i=0; i { 
+x = random(maxx); 
+y = random(maxy); 
+color = random(maxcolor); 
+if (color == getpixel) 
+
+函数名: gets 
+功 能: 从流中取一字符串 
+用 法: char *gets(char *string); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+char string[80]; 
+
+printf("Input a string:"); 
+gets(string); 
+printf("The string input was: %s\n", 
+string); 
+return 0; 
+} 
+
+
+
+函数名: gettext 
+功 能: 将文本方式屏幕上的文本拷贝到存储区 
+用 法: int gettext(int left, int top, int right, int bottom, void *destin); 
+程序例: 
+
+#include 
+
+char buffer[4096]; 
+
+int main(void) 
+{ 
+int i; 
+clrscr(); 
+for (i = 0; i <= 20; i++) 
+cprintf("Line #%d\r\n", i); 
+gettext(1, 1, 80, 25, buffer); 
+gotoxy(1, 25); 
+cprintf("Press any key to clear screen..."); 
+getch(); 
+clrscr(); 
+gotoxy(1, 25); 
+cprintf("Press any key to restore screen..."); 
+getch(); 
+puttext(1, 1, 80, 25, buffer); 
+gotoxy(1, 25); 
+cprintf("Press any key to quit..."); 
+getch(); 
+return 0; 
+} 
+
+
+
+函数名: gettextinfo 
+功 能: 取得文本模式的显示信息 
+用 法: void gettextinfo(struct text_info *inforec); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+struct text_info ti; 
+gettextinfo(&ti); 
+cprintf("window left %2d\r\n",ti.winleft); 
+cprintf("window top %2d\r\n",ti.wintop); 
+cprintf("window right %2d\r\n",ti.winright); 
+cprintf("window bottom %2d\r\n",ti.winbottom); 
+cprintf("attribute %2d\r\n",ti.attribute); 
+cprintf("normal attribute %2d\r\n",ti.normattr); 
+cprintf("current mode %2d\r\n",ti.currmode); 
+cprintf("screen height %2d\r\n",ti.screenheight); 
+cprintf("screen width %2d\r\n",ti.screenwidth); 
+cprintf("current x %2d\r\n",ti.curx); 
+cprintf("current y %2d\r\n",ti.cury); 
+return 0; 
+} 
+
+
+
+函数名: gettextsettings 
+功 能: 返回有关当前图形文本字体的信息 
+用 法: void far gettextsettings(struct textsettingstype far *textinfo); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+/* the names of the fonts supported */ 
+char *font[] = { "DEFAULT_FONT", 
+"TRIPLEX_FONT", 
+"SMALL_FONT", 
+"SANS_SERIF_FONT", 
+"GOTHIC_FONT" 
+}; 
+
+/* the names of the text directions supported */ 
+char *dir[] = { "HORIZ_DIR", "VERT_DIR" }; 
+
+/* horizontal text justifications supported */ 
+char *hjust[] = { "LEFT_TEXT", "CENTER_TEXT", "RIGHT_TEXT" }; 
+
+/* vertical text justifications supported */ 
+char *vjust[] = { "BOTTOM_TEXT", "CENTER_TEXT", "TOP_TEXT" }; 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+struct textsettingstype textinfo; 
+int midx, midy, ht; 
+char fontstr[80], dirstr[80], sizestr[80]; 
+char hjuststr[80], vjuststr[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* get information about current text settings */ 
+gettextsettings(&textinfo); 
+
+/* convert text information into strings */ 
+sprintf(fontstr, "%s is the text style.", font[textinfo.font]); 
+sprintf(dirstr, "%s is the text direction.", dir[textinfo.direction]); 
+sprintf(sizestr, "%d is the text size.", textinfo.charsize); 
+sprintf(hjuststr, "%s is the horizontal justification.", 
+hjust[textinfo.horiz]); 
+sprintf(vjuststr, "%s is the vertical justification.", 
+vjust[textinfo.vert]); 
+
+/* display the information */ 
+ht = textheight("W"); 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, fontstr); 
+outtextxy(midx, midy+2*ht, dirstr); 
+outtextxy(midx, midy+4*ht, sizestr); 
+outtextxy(midx, midy+6*ht, hjuststr); 
+outtextxy(midx, midy+8*ht, vjuststr); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+函数名: gettime 
+功 能: 取得系统时间 
+用 法: void gettime(struct time *timep); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+struct time t; 
+
+gettime(&t); 
+printf("The current time is: %2d:%02d:%02d.%02d\n", 
+t.ti_hour, t.ti_min, t.ti_sec, t.ti_hund); 
+return 0; 
+} 
+
+
+
+
+函数名: getvect 
+功 能: 取得中断向量入口 
+用 法: void interrupt(*getvect(int intr_num)); 
+程序例: 
+
+#include 
+#include 
+
+void interrupt get_out(); /* interrupt prototype */ 
+
+void interrupt (*oldfunc)(); /* interrupt function pointer */ 
+int looping = 1; 
+
+int main(void) 
+{ 
+puts("Press to terminate"); 
+
+/* save the old interrupt */ 
+oldfunc = getvect(5); 
+
+/* install interrupt handler */ 
+setvect(5,get_out); 
+
+/* do nothing */ 
+while (looping); 
+
+/* restore to original interrupt routine */ 
+setvect(5,oldfunc); 
+
+puts("Success"); 
+return 0; 
+} 
+void interrupt get_out() 
+{ 
+looping = 0; /* change global variable to get out of loop */ 
+} 
+
+
+
+函数名: getverify 
+功 能: 返回DOS校验标志状态 
+用 法: int getverify(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+if (getverify()) 
+printf("DOS verify flag is on\n"); 
+else 
+printf("DOS verify flag is off\n"); 
+return 0; 
+} 
+
+
+函数名: getviewsetting 
+功 能: 返回有关当前视区的信息 
+用 法: void far getviewsettings(struct viewporttype far *viewport); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+char *clip[] = { "OFF", "ON" }; 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+struct viewporttype viewinfo; 
+int midx, midy, ht; 
+char topstr[80], botstr[80], clipstr[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* get information about current viewport */ 
+getviewsettings(&viewinfo); 
+
+/* convert text information into strings */ 
+sprintf(topstr, "(%d, %d) is the upper left viewport corner.", 
+viewinfo.left, viewinfo.top); 
+sprintf(botstr, "(%d, %d) is the lower right viewport corner.", 
+viewinfo.right, viewinfo.bottom); 
+sprintf(clipstr, "Clipping is turned %s.", clip[viewinfo.clip]); 
+
+/* display the information */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+ht = textheight("W"); 
+outtextxy(midx, midy, topstr); 
+outtextxy(midx, midy+2*ht, botstr); 
+outtextxy(midx, midy+4*ht, clipstr); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: getw 
+功 能: 从流中取一整数 
+用 法: int getw(FILE *strem); 
+程序例: 
+
+#include 
+#include 
+
+#define FNAME "test.$$$" 
+
+int main(void) 
+{ 
+FILE *fp; 
+int word; 
+
+/* place the word in a file */ 
+fp = fopen(FNAME, "wb"); 
+if (fp == NULL) 
+{ 
+printf("Error opening file %s\n", FNAME); 
+exit(1); 
+} 
+
+word = 94; 
+putw(word,fp); 
+if (ferror(fp)) 
+printf("Error writing to file\n"); 
+else 
+printf("Successful write\n"); 
+fclose(fp); 
+
+/* reopen the file */ 
+fp = fopen(FNAME, "rb"); 
+if (fp == NULL) 
+{ 
+printf("Error opening file %s\n", FNAME); 
+exit(1); 
+} 
+
+/* extract the word */ 
+word = getw(fp); 
+if (ferror(fp)) 
+printf("Error reading file\n"); 
+else 
+printf("Successful read: word = %d\n", word); 
+
+/* clean up */ 
+fclose(fp); 
+unlink(FNAME); 
+
+return 0; 
+} 
+
+
+
+
+函数名: getx 
+功 能: 返回当前图形位置的x坐标 
+用 法: int far getx(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+char msg[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* move to the screen center point */ 
+moveto(getmaxx() / 2, getmaxy() / 2); 
+
+/* create a message string */ 
+sprintf(msg, "<-(%d, %d) is the here.", getx(), gety()); 
+
+/* display the message */ 
+outtext(msg); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: gety 
+功 能: 返回当前图形位置的y坐标 
+用 法: int far gety(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+char msg[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* move to the screen center point */ 
+moveto(getmaxx() / 2, getmaxy() / 2); 
+
+/* create a message string */ 
+sprintf(msg, "<-(%d, %d) is the here.", getx(), gety()); 
+
+/* display the message */ 
+outtext(msg); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: gmtime 
+功 能: 把日期和时间转换为格林尼治标准时间(GMT) 
+用 法: struct tm *gmtime(long *clock); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+/* Pacific Standard Time & Daylight Savings */ 
+char *tzstr = "TZ=PST8PDT"; 
+
+int main(void) 
+{ 
+time_t t; 
+struct tm *gmt, *area; 
+
+putenv(tzstr); 
+tzset(); 
+
+t = time(NULL); 
+area = localtime(&t); 
+printf("Local time is: %s", asctime(area)); 
+gmt = gmtime(&t); 
+printf("GMT is: %s", asctime(gmt)); 
+return 0; 
+} 
+
+
+
+函数名: gotoxy 
+功 能: 在文本窗口中设置光标 
+用 法: void gotoxy(int x, int y); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+gotoxy(35, 12); 
+cprintf("Hello world"); 
+getch(); 
+return 0; 
+} 
+
+
+
+函数名: gotoxy 
+功 能: 在文本窗口中设置光标 
+用 法: void gotoxy(int x, int y); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+gotoxy(35, 12); 
+cprintf("Hello world"); 
+getch(); 
+return 0; 
+} 
+
+
+
+函数名: graphdefaults 
+功 能: 将所有图形设置复位为它们的缺省值 
+用 法: void far graphdefaults(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int maxx, maxy; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, "c:\\bor\\Borland\\bgi"); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+maxx = getmaxx(); 
+maxy = getmaxy(); 
+
+/* output line with non-default settings */ 
+setlinestyle(DOTTED_LINE, 0, 3); 
+line(0, 0, maxx, maxy); 
+outtextxy(maxx/2, maxy/3, "Before default values are restored."); 
+getch(); 
+
+/* restore default values for everything */ 
+graphdefaults(); 
+
+/* clear the screen */ 
+cleardevice(); 
+
+/* output line with default settings */ 
+line(0, 0, maxx, maxy); 
+outtextxy(maxx/2, maxy/3, "After restoring default values."); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: grapherrormsg 
+功 能: 返回一个错误信息串的指针 
+用 法: char *far grapherrormsg(int errorcode); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+#define NONSENSE -50 
+
+int main(void) 
+{ 
+/* FORCE AN ERROR TO OCCUR */ 
+int gdriver = NONSENSE, gmode, errorcode; 
+
+/* initialize graphics mode */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+
+/* if an error occurred, then output a */ 
+/* descriptive error message. */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* draw a line */ 
+line(0, 0, getmaxx(), getmaxy()); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: graphresult 
+功 能: 返回最后一次不成功的图形操作的错误代码 
+用 法: int far graphresult(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* draw a line */ 
+line(0, 0, getmaxx(), getmaxy()); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+函数名: _graphfreemem 
+功 能: 用户可修改的图形存储区释放函数 
+用 法: void far _graphfreemem(void far *ptr, unsigned size); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+
+/* clear the text screen */ 
+clrscr(); 
+printf("Press any key to initialize graphics mode:"); 
+getch(); 
+clrscr(); 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* display a message */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, "Press any key to exit graphics mode:"); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+/* called by the graphics kernel to allocate memory */ 
+void far * far _graphgetmem(unsigned size) 
+{ 
+printf("_graphgetmem called to allocate %d bytes.\n", size); 
+printf("hit any key:"); 
+getch(); 
+printf("\n"); 
+
+/* allocate memory from far heap */ 
+return farmalloc(size); 
+} 
+
+/* called by the graphics kernel to free memory */ 
+void far _graphfreemem(void far *ptr, unsigned size) 
+{ 
+printf("_graphfreemem called to free %d bytes.\n", size); 
+printf("hit any key:"); 
+getch(); 
+printf("\n"); 
+
+/* free ptr from far heap */ 
+farfree(ptr); 
+} 
+
+
+函数名: _graphgetmem 
+功 能: 用户可修改的图形存储区分配函数 
+用 法: void far *far _graphgetmem(unsigned size); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request autodetection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy; 
+
+/* clear the text screen */ 
+clrscr(); 
+printf("Press any key to initialize graphics mode:"); 
+getch(); 
+clrscr(); 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* display a message */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(midx, midy, "Press any key to exit graphics mode:"); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+/* called by the graphics kernel to allocate memory */ 
+void far * far _graphgetmem(unsigned size) 
+{ 
+printf("_graphgetmem called to allocate %d bytes.\n", size); 
+printf("hit any key:"); 
+getch(); 
+printf("\n"); 
+
+/* allocate memory from far heap */ 
+return farmalloc(size); 
+} 
+
+/* called by the graphics kernel to free memory */ 
+void far _graphfreemem(void far *ptr, unsigned size) 
+{ 
+printf("_graphfreemem called to free %d bytes.\n", size); 
+printf("hit any key:"); 
+getch(); 
+printf("\n"); 
+
+/* free ptr from far heap */ 
+farfree(ptr); 
+}
+
+

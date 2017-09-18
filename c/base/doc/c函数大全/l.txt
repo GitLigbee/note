@@ -1,0 +1,475 @@
+函数名: labs 
+用 法: long labs(long n); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+long result; 
+long x = -12345678L; 
+
+result= labs(x); 
+printf("number: %ld abs value: %ld\n", 
+x, result); 
+
+return 0; 
+} 
+
+
+
+
+函数名: ldexp 
+功 能: 计算value*2的幂 
+用 法: double ldexp(double value, int exp); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double value; 
+double x = 2; 
+
+/* ldexp raises 2 by a power of 3 
+then multiplies the result by 2 */ 
+value = ldexp(x,3); 
+printf("The ldexp value is: %lf\n", 
+value); 
+
+return 0; 
+} 
+
+
+
+函数名: ldiv 
+功 能: 两个长整型数相除, 返回商和余数 
+用 法: ldiv_t ldiv(long lnumer, long ldenom); 
+程序例: 
+
+/* ldiv example */ 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+ldiv_t lx; 
+
+lx = ldiv(100000L, 30000L); 
+printf("100000 div 30000 = %ld remainder %ld\n", lx.quot, lx.rem); 
+return 0; 
+} 
+
+
+函数名: lfind 
+功 能: 执行线性搜索 
+用 法: void *lfind(void *key, void *base, int *nelem, int width, 
+int (*fcmp)()); 
+程序例: 
+
+#include 
+#include 
+
+int compare(int *x, int *y) 
+{ 
+return( *x - *y ); 
+} 
+
+int main(void) 
+{ 
+int array[5] = {35, 87, 46, 99, 12}; 
+size_t nelem = 5; 
+int key; 
+int *result; 
+
+key = 99; 
+result = lfind(&key, array, &nelem, 
+sizeof(int), (int(*)(const void *,const void *))compare); 
+if (result) 
+printf("Number %d found\n",key); 
+else 
+printf("Number %d not found\n",key); 
+
+return 0; 
+} 
+
+
+
+函数名: line 
+功 能: 在指定两点间画一直线 
+用 法: void far line(int x0, int y0, int x1, int y1); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int xmax, ymax; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+/* an error occurred */ 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); 
+} 
+
+setcolor(getmaxcolor()); 
+xmax = getmaxx(); 
+ymax = getmaxy(); 
+
+/* draw a diagonal line */ 
+line(0, 0, xmax, ymax); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: linerel 
+功 能: 从当前位置点(CP)到与CP有一给定相对距离的点画一直线 
+用 法: void far linerel(int dx, int dy); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+char msg[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", 
+grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); 
+} 
+
+/* move the C.P. to location (20, 30) */ 
+moveto(20, 30); 
+
+/* create and output a 
+message at (20, 30) */ 
+sprintf(msg, " (%d, %d)", getx(), gety()); 
+outtextxy(20, 30, msg); 
+
+/* draw a line to a point a relative 
+distance away from the current 
+value of C.P. */ 
+linerel(100, 100); 
+
+/* create and output a message at C.P. */ 
+sprintf(msg, " (%d, %d)", getx(), gety()); 
+outtext(msg); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+函数名: localtime 
+功 能: 把日期和时间转变为结构 
+用 法: struct tm *localtime(long *clock); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+time_t timer; 
+struct tm *tblock; 
+
+/* gets time of day */ 
+timer = time(NULL); 
+
+/* converts date/time to a structure */ 
+tblock = localtime(&timer); 
+
+printf("Local time is: %s", asctime(tblock)); 
+
+return 0; 
+} 
+
+
+
+
+函数名: lock 
+功 能: 设置文件共享锁 
+用 法: int lock(int handle, long offset, long length); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle, status; 
+long length; 
+
+/* Must have DOS Share.exe loaded for */ 
+/* file locking to function properly */ 
+
+handle = sopen("c:\\autoexec.bat", 
+O_RDONLY,SH_DENYNO,S_IREAD); 
+
+if (handle < 0) 
+{ 
+printf("sopen failed\n"); 
+exit(1); 
+} 
+
+length = filelength(handle); 
+status = lock(handle,0L,length/2); 
+
+if (status == 0) 
+printf("lock succeeded\n"); 
+else 
+printf("lock failed\n"); 
+
+status = unlock(handle,0L,length/2); 
+
+if (status == 0) 
+printf("unlock succeeded\n"); 
+else 
+printf("unlock failed\n"); 
+
+close(handle); 
+return 0; 
+} 
+
+
+
+函数名: log 
+功 能: 对数函数ln(x) 
+用 法: double log(double x); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double result; 
+double x = 8.6872; 
+
+result = log(x); 
+printf("The natural log of %lf is %lf\n", x, result); 
+
+return 0; 
+} 
+
+
+
+函数名: log10 
+功 能: 对数函数log 
+用 法: double log10(double x); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double result; 
+double x = 800.6872; 
+
+result = log10(x); 
+printf("The common log of %lf is %lf\n", x, result); 
+
+return 0; 
+} 
+
+
+
+
+函数名: longjump 
+功 能: 执行非局部转移 
+用 法: void longjump(jmp_buf env, int val); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+void subroutine(jmp_buf); 
+
+int main(void) 
+{ 
+
+int value; 
+jmp_buf jumper; 
+
+value = setjmp(jumper); 
+if (value != 0) 
+{ 
+printf("Longjmp with value %d\n", value); 
+exit(value); 
+} 
+printf("About to call subroutine ... \n"); 
+subroutine(jumper); 
+
+return 0; 
+} 
+
+void subroutine(jmp_buf jumper) 
+{ 
+longjmp(jumper,1); 
+} 
+
+
+
+
+函数名: lowvideo 
+功 能: 选择低亮度字符 
+用 法: void lowvideo(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+
+highvideo(); 
+cprintf("High Intesity Text\r\n"); 
+lowvideo(); 
+gotoxy(1,2); 
+cprintf("Low Intensity Text\r\n"); 
+
+return 0; 
+} 
+
+
+
+
+函数名: lrotl, _lrotl 
+功 能: 将无符号长整型数向左循环移位 
+用 法: unsigned long lrotl(unsigned long lvalue, int count); 
+unsigned long _lrotl(unsigned long lvalue, int count); 
+程序例: 
+
+/* lrotl example */ 
+#include 
+#include 
+
+int main(void) 
+{ 
+unsigned long result; 
+unsigned long value = 100; 
+
+result = _lrotl(value,1); 
+printf("The value %lu rotated left one bit is: %lu\n", value, result); 
+
+return 0; 
+} 
+
+
+
+函数名: lsearch 
+功 能: 线性搜索 
+用 法: void *lsearch(const void *key, void *base, size_t *nelem, 
+size_t width, int (*fcmp)(const void *, const void *)); 
+程序例: 
+
+#include 
+#include 
+
+int compare(int *x, int *y) 
+{ 
+return( *x - *y ); 
+} 
+
+int main(void) 
+{ 
+int array[5] = {35, 87, 46, 99, 12}; 
+size_t nelem = 5; 
+int key; 
+int *result; 
+
+key = 99; 
+result = lfind(&key, array, &nelem, 
+sizeof(int), (int(*)(const void *,const void *))compare); 
+if (result) 
+printf("Number %d found\n",key); 
+else 
+printf("Number %d not found\n",key); 
+
+return 0; 
+} 
+
+
+
+
+函数名: lseek 
+功 能: 移动文件读/写指针 
+用 法: long lseek(int handle, long offset, int fromwhere); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char msg[] = "This is a test"; 
+char ch; 
+
+/* create a file */ 
+handle = open("TEST.$$$", O_CREAT | O_RDWR, S_IREAD | S_IWRITE); 
+
+/* write some data to the file */ 
+write(handle, msg, strlen(msg)); 
+
+/* seek to the begining of the file */ 
+lseek(handle, 0L, SEEK_SET); 
+
+/* reads chars from the file until we hit EOF */ 
+do 
+{ 
+read(handle, &ch, 1); 
+printf("%c", ch); 
+} while (!eof(handle)); 
+
+close(handle); 
+return 0; 
+} 

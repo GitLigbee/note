@@ -1,0 +1,435 @@
+函数大全(t开头)
+
+
+
+函数名: tan 
+功 能: 正切函数 
+用 法: double tan(double x); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double result, x; 
+
+x = 0.5; 
+result = tan(x); 
+printf("The tan of %lf is %lf\n", x, result); 
+return 0; 
+} 
+
+
+
+
+函数名: tanh 
+功 能: 双曲正切函数 
+用 法: double tanh(double x); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+double result, x; 
+
+x = 0.5; 
+result = tanh(x); 
+printf("The hyperbolic tangent of %lf is %lf\n", x, result); 
+return 0; 
+} 
+
+
+
+
+
+函数名: tell 
+功 能: 取文件指针的当前位置 
+用 法: long tell(int handle); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+char msg[] = "Hello world"; 
+
+if ((handle = open("TEST.$$$", O_CREAT | O_TEXT | O_APPEND)) == -1) 
+{ 
+perror("Error:"); 
+return 1; 
+} 
+write(handle, msg, strlen(msg)); 
+printf("The file pointer is at byte %ld\n", tell(handle)); 
+close(handle); 
+return 0; 
+} 
+
+
+
+
+
+函数名: textattr 
+功 能: 设置文本属性 
+用 法: void textattr(int attribute); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+int i; 
+
+clrscr(); 
+for (i=0; i<9; i++) 
+{ 
+textattr(i + ((i+1) << 4)); 
+cprintf("This is a test\r\n"); 
+} 
+
+return 0; 
+} 
+
+
+
+
+函数名: textbackground 
+功 能: 选择新的文本背景颜色 
+用 法: void textbackground(int color); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+int i, j; 
+
+clrscr(); 
+for (i=0; i<9; i++) 
+{ 
+for (j=0; j<80; j++) 
+cprintf("C"); 
+cprintf("\r\n"); 
+textcolor(i+1); 
+textbackground(i); 
+} 
+
+return 0; 
+} 
+
+
+
+
+函数名: textcolor 
+功 能: 在文本模式中选择新的字符颜色 
+用 法: void textcolor(int color); 
+程序例: 
+#include 
+
+int main(void) 
+{ 
+int i; 
+
+for (i=0; i<15; i++) 
+{ 
+textcolor(i); 
+cprintf("Foreground Color\r\n"); 
+} 
+
+return 0; 
+} 
+
+
+
+
+函数名: textheight 
+功 能: 返回以像素为单位的字符串高度 
+用 法: int far textheight(char far *textstring); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int y = 0; 
+int i; 
+char msg[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* draw some text on the screen */ 
+for (i=1; i<11; i++) 
+{ 
+/* select the text style, direction, and size */ 
+settextstyle(TRIPLEX_FONT, HORIZ_DIR, i); 
+
+/* create a message string */ 
+sprintf(msg, "Size: %d", i); 
+
+/* output the message */ 
+outtextxy(1, y, msg); 
+
+/* advance to the next text line */ 
+y += textheight(msg); 
+} 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: textmode 
+功 能: 将屏幕设置成文本模式 
+用 法: void textmode(int mode); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+textmode(BW40); 
+cprintf("ABC"); 
+getch(); 
+
+textmode(C40); 
+cprintf("ABC"); 
+getch(); 
+
+textmode(BW80); 
+cprintf("ABC"); 
+getch(); 
+
+textmode(C80); 
+cprintf("ABC"); 
+getch(); 
+
+textmode(MONO); 
+cprintf("ABC"); 
+getch(); 
+
+return 0; 
+} 
+
+
+
+函数名: textwidth 
+功 能: 返回以像素为单位的字符串宽度 
+用 法: int far textwidth(char far *textstring); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int x = 0, y = 0; 
+int i; 
+char msg[80]; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+y = getmaxy() / 2; 
+
+settextjustify(LEFT_TEXT, CENTER_TEXT); 
+for (i=1; i<11; i++) 
+{ 
+/* select the text style, direction, and size */ 
+settextstyle(TRIPLEX_FONT, HORIZ_DIR, i); 
+
+/* create a message string */ 
+sprintf(msg, "Size: %d", i); 
+
+/* output the message */ 
+outtextxy(x, y, msg); 
+
+/* advance to the end of the text */ 
+x += textwidth(msg); 
+} 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: time 
+功 能: 取一天的时间 
+用 法: logn time(long *tloc); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+time_t t; 
+
+t = time(NULL); 
+printf("The number of seconds since January 1, 1970 is %ld",t); 
+return 0; 
+} 
+
+
+
+
+函数名: tmpfile 
+功 能: 以二进制方式打开暂存文件 
+用 法: FILE *tmpfile(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+FILE *tempfp; 
+
+tempfp = tmpfile(); 
+if (tempfp) 
+printf("Temporary file created\n"); 
+else 
+{ 
+printf("Unable to create temporary file\n"); 
+exit(1); 
+} 
+
+return 0; 
+} 
+
+
+
+
+函数名: tmpnam 
+功 能: 创建一个唯一的文件名 
+用 法: char *tmpnam(char *sptr); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+char name[13]; 
+
+tmpnam(name); 
+printf("Temporary name: %s\n", name); 
+return 0; 
+} 
+
+
+
+
+函数名: tolower 
+功 能: 把字符转换成小写字母 
+用 法: int tolower(int c); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int length, i; 
+char *string = "THIS IS A STRING"; 
+
+length = strlen(string); 
+for (i=0; i { 
+string[i] = tolower(string[i]); 
+} 
+printf("%s\n",string); 
+
+return 0; 
+} 
+
+
+
+函数名: toupper 
+功 能: 把字符转换成大写字母 
+用 法: int toupper(int c); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int length, i; 
+char *string = "this is a string"; 
+
+length = strlen(string); 
+for (i=0; i { 
+string[i] = toupper(string[i]); 
+} 
+
+printf("%s\n",string); 
+
+return 0; 
+} 
+
+
+
+函数名: tzset 
+功 能: UNIX时间兼容函数 
+用 法: void tzset(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+time_t td; 
+
+putenv("TZ=PST8PDT"); 
+tzset(); 
+time(&td); 
+printf("Current time = %s\n", asctime(localtime(&td))); 
+return 0; 
+} 
+

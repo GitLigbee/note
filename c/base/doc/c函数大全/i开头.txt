@@ -1,0 +1,542 @@
+
+函数大全(i开头)
+
+函数名: imagesize 
+功 能: 返回保存位图像所需的字节数 
+用 法: unsigned far imagesize(int left, int top, int right, int bottom); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+#define ARROW_SIZE 10 
+
+void draw_arrow(int x, int y); 
+
+int main(void) 
+{ 
+/* request autodetection */ 
+int gdriver = DETECT, gmode, errorcode; 
+void *arrow; 
+int x, y, maxx; 
+unsigned int size; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+maxx = getmaxx(); 
+x = 0; 
+y = getmaxy() / 2; 
+
+/* draw the image to be grabbed */ 
+draw_arrow(x, y); 
+
+/* calculate the size of the image */ 
+size = imagesize(x, y-ARROW_SIZE, x+(4*ARROW_SIZE), y+ARROW_SIZE); 
+
+/* allocate memory to hold the image */ 
+arrow = malloc(size); 
+
+/* grab the image */ 
+getimage(x, y-ARROW_SIZE, x+(4*ARROW_SIZE), y+ARROW_SIZE, arrow); 
+
+/* repeat until a key is pressed */ 
+while (!kbhit()) 
+{ 
+/* erase old image */ 
+putimage(x, y-ARROW_SIZE, arrow, XOR_PUT); 
+
+x += ARROW_SIZE; 
+if (x >= maxx) 
+x = 0; 
+
+/* plot new image */ 
+putimage(x, y-ARROW_SIZE, arrow, XOR_PUT); 
+} 
+
+/* clean up */ 
+free(arrow); 
+closegraph(); 
+return 0; 
+} 
+
+void draw_arrow(int x, int y) 
+{ 
+/* draw an arrow on the screen */ 
+moveto(x, y); 
+linerel(4*ARROW_SIZE, 0); 
+linerel(-2*ARROW_SIZE, -1*ARROW_SIZE); 
+linerel(0, 2*ARROW_SIZE); 
+linerel(2*ARROW_SIZE, -1*ARROW_SIZE); 
+} 
+
+
+
+
+函数名: initgraph 
+功 能: 初始化图形系统 
+用 法: void far initgraph(int far *graphdriver, int far *graphmode, 
+char far *pathtodriver); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+
+/* initialize graphics mode */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* return with error code */ 
+} 
+
+/* draw a line */ 
+line(0, 0, getmaxx(), getmaxy()); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: inport 
+功 能: 从硬件端口中输入 
+用 法: int inp(int protid); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int result; 
+int port = 0; /* serial port 0 */ 
+
+result = inport(port); 
+printf("Word read from port %d = 0x%X\n", port, result); 
+return 0; 
+} 
+
+
+
+函数名: insline 
+功 能: 在文本窗口中插入一个空行 
+用 法: void insline(void); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+clrscr(); 
+cprintf("INSLINE inserts an empty line in the text window\r\n"); 
+cprintf("at the cursor position using the current text\r\n"); 
+cprintf("background color. All lines below the empty one\r\n"); 
+cprintf("move down one line and the bottom line scrolls\r\n"); 
+cprintf("off the bottom of the window.\r\n"); 
+cprintf("\r\nPress any key to continue:"); 
+gotoxy(1, 3); 
+getch(); 
+insline(); 
+getch(); 
+return 0; 
+} 
+
+
+
+
+函数名: installuserdriver 
+功 能: 安装设备驱动程序到BGI设备驱动程序表中 
+用 法: int far installuserdriver(char far *name, int (*detect)(void)); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+/* function prototypes */ 
+int huge detectEGA(void); 
+void checkerrors(void); 
+
+int main(void) 
+{ 
+int gdriver, gmode; 
+
+/* install a user written device driver */ 
+gdriver = installuserdriver("EGA", detectEGA); 
+
+/* must force use of detection routine */ 
+gdriver = DETECT; 
+
+/* check for any installation errors */ 
+checkerrors(); 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* check for any initialization errors */ 
+checkerrors(); 
+
+/* draw a line */ 
+line(0, 0, getmaxx(), getmaxy()); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+/* detects EGA or VGA cards */ 
+int huge detectEGA(void) 
+{ 
+int driver, mode, sugmode = 0; 
+
+detectgraph(&driver, &mode); 
+if ((driver == EGA) || (driver == VGA)) 
+/* return suggested video mode number */ 
+return sugmode; 
+else 
+/* return an error code */ 
+return grError; 
+} 
+
+/* check for and report any graphics errors */ 
+void checkerrors(void) 
+{ 
+int errorcode; 
+
+/* read result of last graphics operation */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); 
+} 
+} 
+
+函数名: installuserfont 
+功 能: 安装未嵌入BGI系统的字体文件(CHR) 
+用 法: int far installuserfont(char far *name); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+/* function prototype */ 
+void checkerrors(void); 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode; 
+int userfont; 
+int midx, midy; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* check for any initialization errors */ 
+checkerrors(); 
+
+/* install a user defined font file */ 
+userfont = installuserfont("USER.CHR"); 
+
+/* check for any installation errors */ 
+checkerrors(); 
+
+/* select the user font */ 
+settextstyle(userfont, HORIZ_DIR, 4); 
+
+/* output some text */ 
+outtextxy(midx, midy, "Testing!"); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+/* check for and report any graphics errors */ 
+void checkerrors(void) 
+{ 
+int errorcode; 
+
+/* read result of last graphics operation */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); 
+} 
+} 
+
+
+
+
+函数名: int86 
+功 能: 通用8086软中断接口 
+用 法: int int86(int intr_num, union REGS *inregs, union REGS *outregs); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+#define VIDEO 0x10 
+
+void movetoxy(int x, int y) 
+{ 
+union REGS regs; 
+
+regs.h.ah = 2; /* set cursor postion */ 
+regs.h.dh = y; 
+regs.h.dl = x; 
+regs.h.bh = 0; /* video page 0 */ 
+int86(VIDEO, ?s, ?s); 
+} 
+
+int main(void) 
+{ 
+clrscr(); 
+movetoxy(35, 10); 
+printf("Hello\n"); 
+return 0; 
+} 
+
+
+
+函数名: int86x 
+功 能: 通用8086软中断接口 
+用 法: int int86x(int intr_num, union REGS *insegs, union REGS *outregs, 
+struct SREGS *segregs); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char filename[80]; 
+union REGS inregs, outregs; 
+struct SREGS segregs; 
+
+printf("Enter filename: "); 
+gets(filename); 
+inregs.h.ah = 0x43; 
+inregs.h.al = 0x21; 
+inregs.x.dx = FP_OFF(filename); 
+segregs.ds = FP_SEG(filename); 
+int86x(0x21, &inregs, &outregs, &segregs); 
+printf("File attribute: %X\n", outregs.x.cx); 
+return 0; 
+} 
+
+
+
+
+函数名: intdos 
+功 能: 通用DOS接口 
+用 法: int intdos(union REGS *inregs, union REGS *outregs); 
+程序例: 
+
+#include 
+#include 
+
+/* deletes file name; returns 0 on success, nonzero on failure */ 
+int delete_file(char near *filename) 
+{ 
+union REGS regs; 
+int ret; 
+regs.h.ah = 0x41; /* delete file */ 
+regs.x.dx = (unsigned) filename; 
+ret = intdos(?s, ?s); 
+
+/* if carry flag is set, there was an error */ 
+return(regs.x.cflag ? ret : 0); 
+} 
+
+int main(void) 
+{ 
+int err; 
+err = delete_file("NOTEXIST.$$$"); 
+if (!err) 
+printf("Able to delete NOTEXIST.$$$\n"); 
+else 
+printf("Not Able to delete NOTEXIST.$$$\n"); 
+return 0; 
+} 
+
+
+
+
+函数名: intdosx 
+功 能: 通用DOS中断接口 
+用 法: int intdosx(union REGS *inregs, union REGS *outregs, 
+struct SREGS *segregs); 
+程序例: 
+
+#include 
+#include 
+
+/* deletes file name; returns 0 on success, nonzero on failure */ 
+int delete_file(char far *filename) 
+{ 
+union REGS regs; struct SREGS sregs; 
+int ret; 
+regs.h.ah = 0x41; /* delete file */ 
+regs.x.dx = FP_OFF(filename); 
+sregs.ds = FP_SEG(filename); 
+ret = intdosx(?s, ?s, &sregs); 
+
+/* if carry flag is set, there was an error */ 
+return(regs.x.cflag ? ret : 0); 
+} 
+
+int main(void) 
+{ 
+int err; 
+err = delete_file("NOTEXIST.$$$"); 
+if (!err) 
+printf("Able to delete NOTEXIST.$$$\n"); 
+else 
+printf("Not Able to delete NOTEXIST.$$$\n"); 
+return 0; 
+} 
+
+
+
+函数名: intr 
+功 能: 改变软中断接口 
+用 法: void intr(int intr_num, struct REGPACK *preg); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+#define CF 1 /* Carry flag */ 
+
+int main(void) 
+{ 
+char directory[80]; 
+struct REGPACK reg; 
+
+printf("Enter directory to change to: "); 
+gets(directory); 
+reg.r_ax = 0x3B << 8; /* shift 3Bh into AH */ 
+reg.r_dx = FP_OFF(directory); 
+reg.r_ds = FP_SEG(directory); 
+intr(0x21, ?); 
+if (reg.r_flags & CF) 
+printf("Directory change failed\n"); 
+getcwd(directory, 80); 
+printf("The current directory is: %s\n", directory); 
+return 0; 
+} 
+
+
+
+函数名: ioctl 
+功 能: 控制I/O设备 
+用 法: int ioctl(int handle, int cmd[,int *argdx, int argcx]); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int stat; 
+
+/* use func 8 to determine if the default drive is removable */ 
+stat = ioctl(0, 8, 0, 0); 
+if (!stat) 
+printf("Drive %c is removable.\n", getdisk() + 'A'); 
+else 
+printf("Drive %c is not removable.\n", getdisk() + 'A'); 
+return 0; 
+} 
+
+
+
+
+函数名: isatty 
+功 能: 检查设备类型 
+用 法: int isatty(int handle); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle; 
+
+handle = fileno(stdprn); 
+if (isatty(handle)) 
+printf("Handle %d is a device type\n", handle); 
+else 
+printf("Handle %d isn't a device type\n", handle); 
+return 0; 
+} 
+
+
+
+
+函数名: itoa 
+功 能: 把一整数转换为字符串 
+用 法: char *itoa(int value, char *string, int radix); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int number = 12345; 
+char string[25]; 
+
+itoa(number, string, 10); 
+printf("integer = %d string = %s\n", number, string); 
+return 0; 
+} 

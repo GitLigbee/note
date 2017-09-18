@@ -1,0 +1,644 @@
+double fabs(double x);
+
+返回双精度x的绝对值。
+
+
+
+void far *farcalloc(unsigned long nunits,unsigned long unitsz);
+
+堆中给含有nu从远nits个元素的，每个元素占用unitsz个字节长的数组分配存贮区。
+成功是返回指向新分配的内存块的指针；若存贮空间不够，返回NULL。
+
+ 
+
+unsigned long farcoreleft(void);
+
+返回远堆中未用存贮区的大小。
+
+
+
+void farfree(void far *block);
+
+释放远堆中以前所分配内存块。
+
+
+
+void far *farmalloc(unsigned long nbytes);
+
+从远堆分配长nbytes字节的内存块，返回新地址。
+
+
+
+void far *farrealloc(void far *oldblock,unsigned long nbytes);
+
+调整已分配的内存块的大小为nbytes。需要的话，可把块中的内容复制到新位置。要注意：所有的可用的RAM可被分配，大于64K的块可被分配。
+远指针用于存取被分配的块。返回重新分配的内存块的地址。若存贮块重新分配失败，返回NULL。
+
+struct fcb {
+
+char fcb_drive; /* 0 = default, 1 = A, 2 = B */
+
+char fcb_name[8]; /* File name */
+
+char fcb_ext[3]; /* File extension */
+
+short fcb_curblk; /* Current block number */
+
+short fcb_recsize; /* Logical record size in bytes */
+
+long fcb_filsize; /* File size in bytes */
+
+short fcb_date; /* Date file was last written */
+
+char fcb_resv[10]; /* Reserved for DOS */
+
+char fcb_currec; /* Current record in block */
+
+long fcb_random; /* Random record number */
+
+};
+
+ 
+
+
+int fclose(FILE *stream);
+
+关闭一个流。
+
+成功返回0；失败是返回EOF。
+
+int fcloseall(void);
+
+关闭所有打开的流，除了stdin,stdout,stdprn,stderr和stdaux。
+
+
+
+
+
+char *fcvt(double value,int ndig,int *dec,int *sign);
+
+把浮点数转换成字符串，把浮点数value转换成长度为ndig的以空字符终结的字符串，返回一个指向这个字符串的指针，相对于串的开始处，
+小数点的位置，由dec间接存贮，dec若为负值，表示小数点在返回的字符串的左边。返回的字符串本身不带小数点。如果value的符号为负，由sign指向的值非零；否则它是零。
+
+
+ 
+
+FILE *fdopen(int handle,char *type);
+
+把流与一个文件描述字相联系地打开。fdopen使流stream与一个从creat,dup,dup2或open得到的文件描述字相联系。流的类型type必须与打开文件描述字handle的模式相匹配。
+
+类型字符串type可以是下列值之一：
+
+r,打开用于只读；
+
+w,创建用于写；
+
+a,打开用于写在原有内容后面，文件不存在时创建用于写；
+
+r+，打开已存在的文件用于更新（读和写）；
+
+a+，添加打开，文件不存在时创建，在末尾更新。成功时返回新打开的流。出错时返回NULL。
+
+ 
+
+
+
+
+
+
+
+
+int feof(FILE *stream);
+
+测试所给stream的文件尾标记的宏。
+
+若检测到文件尾标记EOF或Ctrl-z返回非零值；否则，返回0。
+
+
+
+#include
+
+int ferror(FILE *stream);
+
+测试给定流读写错误的宏。
+
+若检测到给定流上的错误返回非0值。
+
+struct ffblk {
+
+char ff_reserved[21];
+
+char ff_attrib;
+
+unsigned ff_ftime;
+
+unsigned ff_fdate;
+
+long ff_fsize;
+
+char ff_name[13];
+
+};
+
+
+
+
+
+int fflush(FILE *stream);
+
+清除输入流的缓冲区，使它仍然打开，并把输出流的缓冲区的内容写入它所联系的文件中。成功时返回0，出错时返回EOF。
+
+ 
+
+int fgetc(FILE *stream);
+
+从流中读取下一个字符。
+
+成功是返回输入流中的下一个字符；至文件结束或出错时返回EOF。
+
+
+
+int fgetchar(void);
+
+从标准输入流中读取字符，时定义为getc(stdin)的宏。
+返回输入流stdin中的下一个字符，它已被转换成为无符号扩展的整形值。遇到出错或文件结束时返回EOF。
+
+ 
+
+int fgetpos(FILE stream,fpos_t *pos);
+
+取得当前文件指针。
+
+fgetpos把与stream相联系的文件指针的位置保存在pos所指的地方。
+
+其中，类型fpos_t在stdio.h中定义为
+
+typeddf long fpos_t;
+
+成功时返回0；失败时，返回非0值。
+
+
+
+
+
+char *fgets(char *s,int n,FILE *stream);
+
+成行读。
+
+从流stream读n-1个字符，或遇换行符'\n'为止，把读出的内容，存入s中。与gets不同，fgets在s未尾保留换行符。一个空字节被加入到s，用来标记串的结束。
+成功时返回s所指的字符串；在出错或遇到文件结束时返回NULL。
+
+ 
+
+long filelength(int handle);
+
+返回与handle相联系的文件长度的字节数，出错时返回-1L。
+
+ 
+
+int fileno(FILE *stream);
+
+返回与stream相联系的文件描述字。
+
+
+
+
+
+
+int fileno(FILE *stream);
+
+返回与stream相联系的文件描述字。
+
+
+
+enum fill_patterns { /* Fill patterns for get/setfillstyle */
+
+0 EMPTY_FILL, /* fills area in background color */
+
+1 SOLID_FILL, /* fills area in solid fill color */
+
+2 LINE_FILL, /* --- fill */
+
+3 LTSLASH_FILL, /* /// fill */
+
+4 SLASH_FILL, /* /// fill with thick lines */
+
+5 BKSLASH_FILL, /* \\\ fill with thick lines */
+
+6 LTBKSLASH_FILL, /* \\\ fill */
+
+7 HATCH_FILL, /* light hatch fill */
+
+8 XHATCH_FILL, /* heavy cross hatch fill */
+
+9 INTERLEAVE_FILL, /* interleaving line fill */
+
+10 WIDE_DOT_FILL, /* Widely spaced dot fill */
+
+11 CLOSE_DOT_FILL, /* Closely spaced dot fill */
+
+12 USER_FILL /* user defined fill */
+
+ 
+
+void far fillellipse(int x,int y,int xradius,int yradius);
+
+画一填充椭圆。
+以(x,y)为中心，以xradius和yradius为水平和垂直半轴，用当前颜色画边线，画一椭圆，用当前填充颜色和填充方式填充。
+
+ 
+
+int findfirst(const char *pathname,struct ffblk *ffblk,int attrib);
+
+搜索磁盘目录。开始通过DOS系统调用0x4E对磁盘目录进行搜索。pathname中可含有要找的盘区路径文件名。
+文件名中可含有通配符（如*或？）。如果找到了匹配的文件，把文件目录信息填入ffblk结构。
+
+attrib是MS-DOS的文件属性字节，用于在搜索过程中选择符合条件的文件。
+attrib可以是在dos.h中定义的下列可取值之一:FA_RDONLY,只读;FA_HIDDEN隐藏;FA_SYSTEM系统文件;FA_LABEL卷标;FA_DIREC,目录;FA_ARCH,档案.可参考>.
+
+结构ffblk的格式如下:
+
+struct ffblk{
+
+char ff_reserved[21}; /*由DOS保留*/
+
+char ff_attrib; /*属性查找*/
+
+int ff_ftime; /*文件时间*/
+
+int f_fdate; /*文件日期*/
+
+long ff_fsize; /*文件大小*/
+
+char ff_name[13}; /*找到的文件名*/
+
+
+在成功的地找到了与搜索路径pathname相匹配的文件名后返回0；否则返回-1。
+
+
+
+
+
+int findnext(xtruct ffblk *ffblk);继续按findfirst的pathname搜索磁盘目录。
+
+成功地找到了与搜索路径pathname相匹配的后续文件名后返回0；否则返回-1。
+
+
+
+
+
+void far floodfill(int x,int y, int border);
+
+填充一个有界的区域。
+
+
+
+
+
+double floor(double x);
+
+返回〈=x的用双精度浮点数表示的最大整数。
+
+
+
+int flushall(void); 
+
+清除所有缓冲区。
+
+清除所有与打开输入流相联系的缓冲区，并把所有和打开输出流相联系的缓冲区的内容写入到各自的文件中，跟在flushall后面的读操作，从输入文件中读新数据到缓冲区中。
+返回一个表示打开输入流和输出流总数的整数。
+
+
+
+
+
+couble fmod (double x, double y);
+
+返回x对y的模，即x/y的余数。
+
+
+
+
+
+void fnmerge(char *path,const char *drive,const char *dir,const char *name,const char *ext);
+
+由给定的盘区路径文件名扩展名等组成部分建立path。
+
+如果drive给出X：，dir给出\DIR\SUBDIR\,name给出NAME,和.ext给出.EXT,根据给定的组成部分,可建立一个完整的盘区路径文件名path为:
+
+X:\DIR\CUBDIR\NAME.EXT
+
+ 
+
+int fnsplit(const char *path,char *drive,char *cir,char *name,char *ext);
+
+可把由path给出的盘区路径文件名扩展名分解成为各自的组成部分.返回一整型数.
+
+
+
+
+
+FILE*fopen (const char *filemane,const char *mode);
+
+打开文件filemane返回相联系的流；出错返回NULL。
+
+mode字符串的可取值有：r，打开用于读；w，打开用于写；a，打开用于在原有内容之后写；r+，打开已存在的文件用于更新（读和写）；w+创建新文件用于更新；a+，打开用于在原有内容之后更新，若文件不存在就创建。
+
+
+
+
+
+unsigned FP_OFF(void far *farptr);
+
+返回远指针farptr的地址偏移量。
+
+ 
+
+
+int fprintf(FILE *stream,const char *format[,argument,...]);
+
+照原样抄写格式串format的内容到流stream中，每遇到一个%，就按规定的格式，依次输出一个表达式argument的值到流stream中，返回写的字符个数。出错时返回EOF。
+
+ 
+
+FILE *stream;
+
+void main( void )
+
+{
+
+long l;
+
+float fp;
+
+char s[81];
+
+char c;
+
+stream = fopen( "fscanf.txt", "w+" );
+
+if( stream == NULL )
+
+printf( "The file fscanf.out was not opened\n" );
+
+else {fprintf( stream, "%s %ld %f%c", "a-string",65000, 3.14159, 'x' );
+
+/* Set pointer to beginning of file: */
+
+fseek( stream, 0L, SEEK_SET );
+
+/* Read data back from file: */
+
+fscanf( stream, "%s", s );
+
+fscanf( stream, "%ld", &l );
+
+fscanf( stream, "%f", 
+
+fscanf( stream, "%c", &c );/* Output data read: */
+
+printf( "%s\n", s );
+
+printf( "%ld\n", l );
+
+printf( "%f\n", fp );
+
+printf( "%c\n", c );
+
+fclose( stream ); }
+
+}
+
+
+
+
+
+int fputc(int c,FILE *stream);
+
+写一个字符到流中。
+
+成功时返回所写的字符，失败或出错时返回EOF。
+
+ 
+
+int fputchar(int c);
+
+送一个字符到屏幕。
+
+等价于fputc(c,stdout);成功时返回所写的字符，失败或出错时返回EOF。
+
+ 
+
+int fputs(const char *s,FILE *stream);
+
+把s所指的以空字符终结的字符串送入流中，不加换行符'\n'，不拷贝串结束符'\0'。
+
+成功时返回最后的字符，出错时返回EOF。
+
+ 
+
+size_t fread(void *ptr,size_t size,size_t n,FILE *stream);
+
+从所给的输入流stream中读取的n项数据，每一项数据长度为size字节，到由ptr所指的块中。
+
+成功时返回所读的数据项数（不是字节数）；遇到文件结束或出错时可能返回0。
+
+void free(void *block);
+
+释放先前分配的首地址为block的内存块。
+
+
+
+int freemem(unsigned segx);
+
+释放先前由allocmem分配的段地址为segx的内存块。
+
+ 
+
+FILE *freopen(const char *filename,const char *mode,FILE *stream);
+
+用filename所指定的文件代替打开的流stream所指定的文件。返回stream，出错时返回NULL。
+
+
+
+
+
+double frexp(double x int *exponent);
+
+将x分解成尾数合指数。
+
+将给出的双精度数x分解成为在0.5和1之间尾数m和整形的指数n，使原来的x=m*(2的n次方），将整形指数n存入exponent所指的地址中，返回尾数m。
+
+
+
+
+
+int fscan(FILE *stream,char *format,address,...);
+
+fscanf扫描输入字段，从流stream读入，每读入一个字段，就依次按照由format所指的格式串中取一个从%开始的格式进行格式化之后存入对应的一个地址address中。
+返回成功地扫描，转换和存贮输入字段的个数，遇文件结束返回EOF。
+
+ 
+
+FILE *stream;
+
+void main( void )
+
+{
+
+long l;
+
+float fp;
+
+char s[81];
+
+char c;
+
+stream = fopen( "fscanf.txt", "w+" );
+
+if( stream == NULL )
+
+printf( "The file fscanf.out was not opened\n" );
+
+else {fprintf( stream, "%s %ld %f%c", "a-string",65000, 3.14159, 'x' );
+
+/* Set pointer to beginning of file: */
+
+fseek( stream, 0L, SEEK_SET );
+
+/* Read data back from file: */
+
+fscanf( stream, "%s", s );
+
+fscanf( stream, "%ld", &l );
+
+fscanf( stream, "%f", 
+
+fscanf( stream, "%c", &c );/* Output data read: */
+
+printf( "%s\n", s );
+
+printf( "%ld\n", l );
+
+printf( "%f\n", fp );
+
+printf( "%c\n", c );
+
+fclose( stream ); }
+
+}
+
+
+
+
+
+int fseek(FILE *stream,long offset,int whence); 
+
+在流上重新定位文件结构的位置。fseek设置与流stream相联系的文件指针到新的位置，新位置与whence给定的文件位置的距离为offset字节。
+whence的取值必须是0，1或2中的一个，分别代表在stdio.h中定义的三个符号常量：
+
+0是SEEK_SET,是文件开始位置；
+
+1是SEEK_CUR，是当前的指针位置；
+
+2时SEEK_END，是文件末尾。
+
+调用了fseek之后，在更新的文件位置上，下一个操作可以是输入；也可以是输出。成功地移动了指针时，fseek返回0；出错或失败时返回非0值。
+
+例:
+
+#include 
+
+FILE *stream;
+
+void main( void )
+
+{
+
+long l;
+
+float fp;
+
+char s[81];
+
+char c;
+
+stream = fopen( "fscanf.txt", "w+" );
+
+if( stream == NULL )
+
+printf( "The file fscanf.out was not opened\n" );
+
+else {fprintf( stream, "%s %ld %f%c", "a-string",65000, 3.14159, 'x' );
+
+/* Set pointer to beginning of file: */
+
+fseek( stream, 0L, SEEK_SET );
+
+/* Read data back from file: */
+
+fscanf( stream, "%s", s );
+
+fscanf( stream, "%ld", &l );
+
+fscanf( stream, "%f", 
+
+fscanf( stream, "%c", &c );/* Output data read: */
+
+printf( "%s\n", s );
+
+printf( "%ld\n", l );
+
+printf( "%f\n", fp );
+
+printf( "%c\n", c );
+
+fclose( stream ); }
+
+}
+
+
+
+
+
+int fsetpos(FILE *stream,const fpos_t *pos);
+
+fsetpos把与stream相联系的文件指针置于新的位置。这个新的位置是先前对此流调用fgetpos所得的值。
+fsetpos清除stream所指文件的文件结束标志，并消除对该文件的所有ungetc操作。在调用fsetpos之后，文件的下一操作可以是输入或输出。
+
+调用fsetpos成功时返回0；若失败，返回非0值。
+
+
+
+
+
+int fstat(int handle,struct stat *statbuf);
+
+把与handle相联系的打开文件或目录的信息存入到statbuf所指的定义在sys\stat.h中的stat结构中。成功时返回0；出错时返回-1。
+
+
+ 
+
+long int ftell(FILE *stream);
+
+返回流stream中当前文件指针位置。偏移量是文件开始算起的字节数。出错时返回-1L，是长整数的-1值。
+
+ 
+
+void ftime(struct timeb *buf);
+
+把当前时间存入到在sys\timeb.h中定义的timeb结构中。
+
+
+
+
+
+size_t fwrite(const void *ptr,size_t size,size_t n,FILE *stream);
+
+fwrite从指针ptr开始把n个数据项添加到给定输出流stream，每个数据项的长度为size个字节。
+
+成功是返回确切的数据项数（不是字节数）；出错时返回短（short）计数值。可能是0。
+
+
+
+

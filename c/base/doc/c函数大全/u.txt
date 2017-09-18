@@ -1,0 +1,207 @@
+函数大全(u开头)
+
+
+函数名: ultoa 
+功 能: 转换一个无符号长整型数为字符串 
+用 法: char *ultoa(unsigned long value, char *string, int radix); 
+程序例: 
+
+#include 
+#include 
+
+int main( void ) 
+{ 
+unsigned long lnumber = 3123456789L; 
+char string[25]; 
+
+ultoa(lnumber,string,10); 
+printf("string = %s unsigned long = %lu\n",string,lnumber); 
+
+return 0; 
+} 
+
+
+
+
+函数名: ungetc 
+功 能: 把一个字符退回到输入流中 
+用 法: int ungetc(char c, FILE *stream); 
+程序例: 
+
+#include 
+#include 
+
+int main( void ) 
+{ 
+int i=0; 
+char ch; 
+
+puts("Input an integer followed by a char:"); 
+
+/* read chars until non digit or EOF */ 
+while((ch = getchar()) != EOF && isdigit(ch)) 
+i = 10 * i + ch - 48; /* convert ASCII into int value */ 
+
+/* if non digit char was read, push it back into input buffer */ 
+if (ch != EOF) 
+ungetc(ch, stdin); 
+
+printf("i = %d, next char in buffer = %c\n", i, getchar()); 
+return 0; 
+} 
+
+
+
+
+函数名: ungetch 
+功 能: 把一个字符退回到键盘缓冲区中 
+用 法: int ungetch(int c); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main( void ) 
+{ 
+int i=0; 
+char ch; 
+
+puts("Input an integer followed by a char:"); 
+
+/* read chars until non digit or EOF */ 
+while((ch = getche()) != EOF && isdigit(ch)) 
+i = 10 * i + ch - 48; /* convert ASCII into int value */ 
+
+/* if non digit char was read, push it back into input buffer */ 
+if (ch != EOF) 
+ungetch(ch); 
+
+printf("\n\ni = %d, next char in buffer = %c\n", i, getch()); 
+return 0; 
+} 
+
+
+
+
+函数名: unixtodos 
+功 能: 把日期和时间转换成DOS格式 
+用 法: void unixtodos(long utime, struct date *dateptr, 
+struct time *timeptr); 
+程序例: 
+
+#include 
+#include 
+
+char *month[] = {"---", "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}; 
+
+#define SECONDS_PER_DAY 86400L /* the number of seconds in one day */ 
+
+struct date dt; 
+struct time tm; 
+
+int main(void) 
+{ 
+unsigned long val; 
+
+/* get today's date and time */ 
+getdate(&dt); 
+gettime(&tm); 
+printf("today is %d %s %d\n", dt.da_day, month[dt.da_mon], dt.da_year); 
+
+/* convert date and time to unix format (number of seconds since Jan 1, 1970 */ 
+val = dostounix(&dt, &tm); 
+/* subtract 42 days worth of seconds */ 
+val -= (SECONDS_PER_DAY * 42); 
+
+/* convert back to dos time and date */ 
+unixtodos(val, &dt, &tm); 
+printf("42 days ago it was %d %s %d\n", 
+dt.da_day, month[dt.da_mon], dt.da_year); 
+return 0; 
+} 
+
+
+
+
+函数名: unlink 
+功 能: 删掉一个文件 
+用 法: int unlink(char *filename); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+FILE *fp = fopen("junk.jnk","w"); 
+int status; 
+
+fprintf(fp,"junk"); 
+
+status = access("junk.jnk",0); 
+if (status == 0) 
+printf("File exists\n"); 
+else 
+printf("File doesn't exist\n"); 
+
+fclose(fp); 
+unlink("junk.jnk"); 
+status = access("junk.jnk",0); 
+if (status == 0) 
+printf("File exists\n"); 
+else 
+printf("File doesn't exist\n"); 
+
+
+return 0; 
+} 
+
+
+
+
+函数名: unlock 
+功 能: 解除文件共享锁 
+用 法: int unlock(int handle, long offset, long length); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int handle, status; 
+long length; 
+
+handle = sopen("c:\\autoexec.bat",O_RDONLY,SH_DENYNO,S_IREAD); 
+
+if (handle < 0) 
+{ 
+printf("sopen failed\n"); 
+exit(1); 
+} 
+
+length = filelength(handle); 
+status = lock(handle,0L,length/2); 
+
+if (status == 0) 
+printf("lock succeeded\n"); 
+else 
+printf("lock failed\n"); 
+
+status = unlock(handle,0L,length/2); 
+
+if (status == 0) 
+printf("unlock succeeded\n"); 
+else 
+printf("unlock failed\n"); 
+
+close(handle); 
+return 0; 
+} 
+

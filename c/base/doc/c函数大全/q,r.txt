@@ -1,0 +1,631 @@
+函数大全(q,r开头)
+
+
+
+
+函数名: qsort 
+功 能: 使用快速排序例程进行排序 
+用 法: void qsort(void *base, int nelem, int width, int (*fcmp)()); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int sort_function( const void *a, const void *b); 
+
+char list[5][4] = { "cat", "car", "cab", "cap", "can" }; 
+
+
+int main(void) 
+{ 
+int x; 
+
+qsort((void *)list, 5, sizeof(list[0]), sort_function); 
+for (x = 0; x < 5; x++) 
+printf("%s\n", list[x]); 
+return 0; 
+} 
+
+int sort_function( const void *a, const void *b) 
+{ 
+return( strcmp(a,b) ); 
+} 
+
+
+
+
+函数名: qsort 
+功 能: 使用快速排序例程进行排序 
+用 法: void qsort(void *base, int nelem, int width, int (*fcmp)()); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int sort_function( const void *a, const void *b); 
+
+char list[5][4] = { "cat", "car", "cab", "cap", "can" }; 
+
+
+int main(void) 
+{ 
+int x; 
+
+qsort((void *)list, 5, sizeof(list[0]), sort_function); 
+for (x = 0; x < 5; x++) 
+printf("%s\n", list[x]); 
+return 0; 
+} 
+
+int sort_function( const void *a, const void *b) 
+{ 
+return( strcmp(a,b) ); 
+}
+
+
+
+
+
+函数名: raise 
+功 能: 向正在执行的程序发送一个信号 
+用 法: int raise(int sig); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+int a, b; 
+
+a = 10; 
+b = 0; 
+if (b == 0) 
+/* preempt divide by zero error */ 
+raise(SIGFPE); 
+a = a / b; 
+return 0; 
+} 
+
+
+
+函数名: rand 
+功 能: 随机数发生器 
+用 法: void rand(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int i; 
+
+printf("Ten random numbers from 0 to 99\n\n"); 
+for(i=0; i<10; i++) 
+printf("%d\n", rand() % 100); 
+return 0; 
+} 
+
+
+
+函数名: randbrd 
+功 能: 随机块读 
+用 法: int randbrd(struct fcb *fcbptr, int reccnt); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char far *save_dta; 
+char line[80], buffer[256]; 
+struct fcb blk; 
+int i, result; 
+
+/* get user input file name for dta */ 
+printf("Enter drive and file name (no path - i.e. a:file.dat)\n"); 
+gets(line); 
+
+/* put file name in fcb */ 
+if (!parsfnm(line, &blk, 1)) 
+{ 
+printf("Error in call to parsfnm\n"); 
+exit(1); 
+} 
+printf("Drive #%d File: %s\n\n", blk.fcb_drive, blk.fcb_name); 
+
+/* open file with DOS FCB open file */ 
+bdosptr(0x0F, &blk, 0); 
+
+/* save old dta, and set new one */ 
+save_dta = getdta(); 
+setdta(buffer); 
+
+/* set up info for the new dta */ 
+blk.fcb_recsize = 128; 
+blk.fcb_random = 0L; 
+result = randbrd(&blk, 1); 
+
+/* check results from randbrd */ 
+if (!result) 
+printf("Read OK\n\n"); 
+else 
+{ 
+perror("Error during read"); 
+exit(1); 
+} 
+
+/* read in data from the new dta */ 
+printf("The first 128 characters are:\n"); 
+for (i=0; i<128; i++) 
+putchar(buffer[i]); 
+
+/* restore previous dta */ 
+setdta(save_dta); 
+
+return 0; 
+} 
+
+
+函数名: randbwr 
+功 能: 随机块写 
+用 法: int randbwr(struct fcp *fcbptr, int reccnt); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char far *save_dta; 
+char line[80]; 
+char buffer[256] = "RANDBWR test!"; 
+struct fcb blk; 
+int result; 
+
+/* get new file name from user */ 
+printf("Enter a file name to create (no path - ie. a:file.dat\n"); 
+gets(line); 
+
+/* parse the new file name to the dta */ 
+parsfnm(line,&blk,1); 
+printf("Drive #%d File: %s\n", blk.fcb_drive, blk.fcb_name); 
+
+/* request DOS services to create file */ 
+if (bdosptr(0x16, &blk, 0) == -1) 
+{ 
+perror("Error creating file"); 
+exit(1); 
+} 
+
+/* save old dta and set new dta */ 
+save_dta = getdta(); 
+setdta(buffer); 
+
+/* write new records */ 
+blk.fcb_recsize = 256; 
+blk.fcb_random = 0L; 
+result = randbwr(&blk, 1); 
+
+if (!result) 
+printf("Write OK\n"); 
+else 
+{ 
+perror("Disk error"); 
+exit(1); 
+} 
+
+/* request DOS services to close the file */ 
+if (bdosptr(0x10, &blk, 0) == -1) 
+{ 
+perror("Error closing file"); 
+exit(1); 
+} 
+
+/* reset the old dta */ 
+setdta(save_dta); 
+
+return 0; 
+} 
+
+
+
+函数名: random 
+功 能: 随机数发生器 
+用 法: int random(int num); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+/* prints a random number in the range 0 to 99 */ 
+int main(void) 
+{ 
+randomize(); 
+printf("Random number in the 0-99 range: %d\n", random (100)); 
+return 0; 
+} 
+
+
+
+函数名: randomize 
+功 能: 初始化随机数发生器 
+用 法: void randomize(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+int i; 
+
+randomize(); 
+printf("Ten random numbers from 0 to 99\n\n"); 
+for(i=0; i<10; i++) 
+printf("%d\n", rand() % 100); 
+return 0; 
+} 
+
+
+
+函数名: read 
+功 能: 从文件中读 
+用 法: int read(int handle, void *buf, int nbyte); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+void *buf; 
+int handle, bytes; 
+
+buf = malloc(10); 
+
+/* 
+Looks for a file in the current directory named TEST.$$$ and attempts 
+to read 10 bytes from it. To use this example you should create the 
+file TEST.$$$ 
+*/ 
+if ((handle = 
+open("TEST.$$$", O_RDONLY | O_BINARY, S_IWRITE | S_IREAD)) == -1) 
+{ 
+printf("Error Opening File\n"); 
+exit(1); 
+} 
+
+if ((bytes = read(handle, buf, 10)) == -1) { 
+printf("Read Failed.\n"); 
+exit(1); 
+} 
+else { 
+printf("Read: %d bytes read.\n", bytes); 
+} 
+return 0; 
+} 
+
+
+
+函数名: realloc 
+功 能: 重新分配主存 
+用 法: void *realloc(void *ptr, unsigned newsize); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+char *str; 
+
+/* allocate memory for string */ 
+str = malloc(10); 
+
+/* copy "Hello" into string */ 
+strcpy(str, "Hello"); 
+
+printf("String is %s\n Address is %p\n", str, str); 
+str = realloc(str, 20); 
+printf("String is %s\n New address is %p\n", str, str); 
+
+/* free memory */ 
+free(str); 
+
+return 0; 
+} 
+
+
+
+函数名: rectangle 
+功 能: 画一个矩形 
+用 法: void far rectangle(int left, int top, int right, int bottom); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int left, top, right, bottom; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+left = getmaxx() / 2 - 50; 
+top = getmaxy() / 2 - 50; 
+right = getmaxx() / 2 + 50; 
+bottom = getmaxy() / 2 + 50; 
+
+/* draw a rectangle */ 
+rectangle(left,top,right,bottom); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: registerbgidriver 
+功 能: 登录已连接进来的图形驱动程序代码 
+用 法: int registerbgidriver(void(*driver)(void)); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+
+/* register a driver that was added into graphics.lib */ 
+errorcode = registerbgidriver(EGAVGA_driver); 
+
+/* report any registration errors */ 
+if (errorcode < 0) 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+/* draw a line */ 
+line(0, 0, getmaxx(), getmaxy()); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: remove 
+功 能: 删除一个文件 
+用 法: int remove(char *filename); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+char file[80]; 
+
+/* prompt for file name to delete */ 
+printf("File to delete: "); 
+gets(file); 
+
+/* delete the file */ 
+if (remove(file) == 0) 
+printf("Removed %s.\n",file); 
+else 
+perror("remove"); 
+
+return 0; 
+} 
+
+
+
+函数名: rename 
+功 能: 重命名文件 
+用 法: int rename(char *oldname, char *newname); 
+程序例: 
+
+#include 
+
+int main(void) 
+{ 
+char oldname[80], newname[80]; 
+
+/* prompt for file to rename and new name */ 
+printf("File to rename: "); 
+gets(oldname); 
+printf("New name: "); 
+gets(newname); 
+
+/* Rename the file */ 
+if (rename(oldname, newname) == 0) 
+printf("Renamed %s to %s.\n", oldname, newname); 
+else 
+perror("rename"); 
+
+return 0; 
+} 
+
+
+
+函数名: restorecrtmode 
+功 能: 将屏幕模式恢复为先前的imitgraph设置 
+用 法: void far restorecrtmode(void); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int x, y; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+x = getmaxx() / 2; 
+y = getmaxy() / 2; 
+
+/* output a message */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(x, y, "Press any key to exit graphics:"); 
+getch(); 
+
+/* restore system to text mode */ 
+restorecrtmode(); 
+printf("We're now in text mode.\n"); 
+printf("Press any key to return to graphics mode:"); 
+getch(); 
+
+/* return to graphics mode */ 
+setgraphmode(getgraphmode()); 
+
+/* output a message */ 
+settextjustify(CENTER_TEXT, CENTER_TEXT); 
+outtextxy(x, y, "We're back in graphics mode."); 
+outtextxy(x, y+textheight("W"), "Press any key to halt:"); 
+
+/* clean up */ 
+getch(); 
+closegraph(); 
+return 0; 
+} 
+
+
+
+函数名: rewind 
+功 能: 将文件指针重新指向一个流的开头 
+用 法: int rewind(FILE *stream); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+FILE *fp; 
+char *fname = "TXXXXXX", *newname, first; 
+
+newname = mktemp(fname); 
+fp = fopen(newname,"w+"); 
+fprintf(fp,"abcdefghijklmnopqrstuvwxyz"); 
+rewind(fp); 
+fscanf(fp,"%c",&first); 
+printf("The first character is: %c\n",first); 
+fclose(fp); 
+remove(newname); 
+
+return 0; 
+} 
+
+
+
+函数名: rmdir 
+功 能: 删除DOS文件目录 
+用 法: int rmdir(char *stream); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+#define DIRNAME "testdir.$$$" 
+
+int main(void) 
+{ 
+int stat; 
+
+stat = mkdir(DIRNAME); 
+if (!stat) 
+printf("Directory created\n"); 
+else 
+{ 
+printf("Unable to create directory\n"); 
+exit(1); 
+} 
+
+getch(); 
+system("dir/p"); 
+getch(); 
+
+stat = rmdir(DIRNAME); 
+if (!stat) 
+printf("\nDirectory deleted\n"); 
+else 
+{ 
+perror("\nUnable to delete directory\n"); 
+exit(1); 
+} 
+
+return 0; 
+} 
+

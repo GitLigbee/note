@@ -1,0 +1,471 @@
+数名: bar 
+功 能: 画一个二维条形图 
+用 法: void far bar(int left, int top, int right, int bottom); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy, i; 
+
+/* initialize graphics and local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with an error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* loop through the fill patterns */ 
+for (i=SOLID_FILL; i { 
+/* set the fill style */ 
+setfillstyle(i, getmaxcolor()); 
+
+/* draw the bar */ 
+bar(midx-50, midy-50, midx+50, 
+midy+50); 
+
+getch(); 
+} 
+
+/* clean up */ 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: bar3d 
+功 能: 画一个三维条形图 
+用 法: void far bar3d(int left, int top, int right, int bottom, 
+int depth, int topflag); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+/* request auto detection */ 
+int gdriver = DETECT, gmode, errorcode; 
+int midx, midy, i; 
+
+/* initialize graphics, local variables */ 
+initgraph(&gdriver, &gmode, ""); 
+
+/* read result of initialization */ 
+errorcode = graphresult(); 
+if (errorcode != grOk) /* an error occurred */ 
+{ 
+printf("Graphics error: %s\n", grapherrormsg(errorcode)); 
+printf("Press any key to halt:"); 
+getch(); 
+exit(1); /* terminate with error code */ 
+} 
+
+midx = getmaxx() / 2; 
+midy = getmaxy() / 2; 
+
+/* loop through the fill patterns */ 
+for (i=EMPTY_FILL; i { 
+/* set the fill style */ 
+setfillstyle(i, getmaxcolor()); 
+
+/* draw the 3-d bar */ 
+bar3d(midx-50, midy-50, midx+50, midy+50, 10, 1); 
+
+getch(); 
+} 
+
+/* clean up */ 
+closegraph(); 
+return 0; 
+} 
+
+
+
+
+函数名: bdos 
+功 能: DOS系统调用 
+用 法: int bdos(int dosfun, unsigned dosdx, unsigned dosal); 
+程序例: 
+
+#include 
+#include 
+
+/* Get current drive as 'A', 'B', ... */ 
+char current_drive(void) 
+{ 
+char curdrive; 
+
+/* Get current disk as 0, 1, ... */ 
+curdrive = bdos(0x19, 0, 0); 
+return('A' + curdrive); 
+} 
+
+int main(void) 
+{ 
+printf("The current drive is %c:\n", current_drive()); 
+return 0; 
+} 
+
+
+
+
+函数名: bdosptr 
+功 能: DOS系统调用 
+用 法: int bdosptr(int dosfun, void *argument, unsigned dosal); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+#include 
+#include 
+
+#define BUFLEN 80 
+
+int main(void) 
+{ 
+char buffer[BUFLEN]; 
+int test; 
+
+printf("Enter full pathname of a directory\n"); 
+gets(buffer); 
+
+test = bdosptr(0x3B,buffer,0); 
+if(test) 
+{ 
+printf("DOS error message: %d\n", errno); 
+/* See errno.h for error listings */ 
+exit (1); 
+} 
+
+getcwd(buffer, BUFLEN); 
+printf("The current directory is: %s\n", buffer); 
+
+return 0; 
+} 
+
+
+
+
+函数名: bioscom 
+功 能: 串行I/O通信 
+用 法: int bioscom(int cmd, char abyte, int port); 
+程序例: 
+
+#include 
+#include 
+
+#define COM1 0 
+#define DATA_READY 0x100 
+#define TRUE 1 
+#define FALSE 0 
+
+#define SETTINGS ( 0x80 | 0x02 | 0x00 | 0x00) 
+
+int main(void) 
+{ 
+int in, out, status, DONE = FALSE; 
+
+bioscom(0, SETTINGS, COM1); 
+cprintf("... BIOSCOM [ESC] to exit ...\n"); 
+while (!DONE) 
+{ 
+status = bioscom(3, 0, COM1); 
+if (status & DATA_READY) 
+if ((out = bioscom(2, 0, COM1) & 0x7F) != 0) 
+putch(out); 
+if (kbhit()) 
+{ 
+if ((in = getch()) == '\x1B') 
+DONE = TRUE; 
+bioscom(1, in, COM1); 
+} 
+} 
+return 0; 
+} 
+
+
+
+
+函数名: biosdisk 
+功 能: 软硬盘I/O 
+用 法: int biosdisk(int cmd, int drive, int head, int track, int sector 
+int nsects, void *buffer); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int result; 
+char buffer[512]; 
+
+printf("Testing to see if drive a: is ready\n"); 
+result = biosdisk(4,0,0,0,0,1,buffer); 
+result &= 0x02; 
+(result) ? (printf("Drive A: Ready\n")) : 
+(printf("Drive A: Not Ready\n")); 
+
+return 0; 
+} 
+
+
+
+
+函数名: biosequip 
+功 能: 检查设备 
+用 法: int biosequip(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int result; 
+char buffer[512]; 
+
+printf("Testing to see if drive a: is ready\n"); 
+result = biosdisk(4,0,0,0,0,1,buffer); 
+result &= 0x02; 
+(result) ? (printf("Drive A: Ready\n")) : 
+(printf("Drive A: Not Ready\n")); 
+
+return 0; 
+} 
+
+
+
+
+函数名: bioskey 
+功 能: 直接使用BIOS服务的键盘接口 
+用 法: int bioskey(int cmd); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+#define RIGHT 0x01 
+#define LEFT 0x02 
+#define CTRL 0x04 
+#define ALT 0x08 
+
+int main(void) 
+{ 
+int key, modifiers; 
+
+/* function 1 returns 0 until a key is pressed */ 
+while (bioskey(1) == 0); 
+
+/* function 0 returns the key that is waiting */ 
+key = bioskey(0); 
+
+/* use function 2 to determine if shift keys were used */ 
+modifiers = bioskey(2); 
+if (modifiers) 
+{ 
+printf("["); 
+if (modifiers & RIGHT) printf("RIGHT"); 
+if (modifiers & LEFT) printf("LEFT"); 
+if (modifiers & CTRL) printf("CTRL"); 
+if (modifiers & ALT) printf("ALT"); 
+printf("]"); 
+} 
+/* print out the character read */ 
+if (isalnum(key & 0xFF)) 
+printf("'%c'\n", key); 
+else 
+printf("%#02x\n", key); 
+return 0; 
+} 
+
+
+
+函数名: biosmemory 
+功 能: 返回存储块大小 
+用 法:int biosmemory(void); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+int memory_size; 
+
+memory_size = biosmemory(); /* returns value up to 640K */ 
+printf("RAM size = %dK\n",memory_size); 
+return 0; 
+} 
+
+
+
+
+函数名: biosprint 
+功 能: 直接使用BIOS服务的打印机I/O 
+用 法: int biosprint(int cmd, int byte, int port); 
+程序例: 
+
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+#define STATUS 2 /* printer status command */ 
+#define PORTNUM 0 /* port number for LPT1 */ 
+
+int status, abyte=0; 
+
+printf("Please turn off your printer. Press any key to continue\n"); 
+getch(); 
+status = biosprint(STATUS, abyte, PORTNUM); 
+if (status & 0x01) 
+printf("Device time out.\n"); 
+if (status & 0x08) 
+printf("I/O error.\n"); 
+
+if (status & 0x10) 
+printf("Selected.\n"); 
+if (status & 0x20) 
+printf("Out of paper.\n"); 
+
+if (status & 0x40) 
+printf("Acknowledge.\n"); 
+if (status & 0x80) 
+printf("Not busy.\n"); 
+
+return 0; 
+} 
+
+
+
+
+函数名: biostime 
+功 能: 读取或设置BIOS时间 
+用 法: long biostime(int cmd, long newtime); 
+程序例: 
+
+#include 
+#include 
+#include 
+#include 
+
+int main(void) 
+{ 
+long bios_time; 
+
+clrscr(); 
+cprintf("The number of clock ticks since midnight is:\r\n"); 
+cprintf("The number of seconds since midnight is:\r\n"); 
+cprintf("The number of minutes since midnight is:\r\n"); 
+cprintf("The number of hours since midnight is:\r\n"); 
+cprintf("\r\nPress any key to quit:"); 
+while(!kbhit()) 
+{ 
+bios_time = biostime(0, 0L); 
+
+gotoxy(50, 1); 
+cprintf("%lu", bios_time); 
+
+gotoxy(50, 2); 
+cprintf("%.4f", bios_time / CLK_TCK); 
+
+gotoxy(50, 3); 
+cprintf("%.4f", bios_time / CLK_TCK / 60); 
+
+gotoxy(50, 4); 
+cprintf("%.4f", bios_time / CLK_TCK / 3600); 
+} 
+return 0; 
+} 
+
+
+
+
+函数名: brk 
+功 能: 改变数据段空间分配 
+用 法: int brk(void *endds); 
+程序例: 
+
+#include 
+#include 
+
+int main(void) 
+{ 
+char *ptr; 
+
+printf("Changing allocation with brk()\n"); 
+ptr = malloc(1); 
+printf("Before brk() call: %lu bytes free\n", coreleft()); 
+brk(ptr+1000); 
+printf(" After brk() call: %lu bytes free\n", coreleft()); 
+return 0; 
+} 
+
+
+
+
+函数名: bsearch 
+功 能: 二分法搜索 
+用 法: void *bsearch(const void *key, const void *base, size_t *nelem, 
+size_t width, int(*fcmp)(const void *, const *)); 
+程序例: 
+
+#include 
+#include 
+
+#define NELEMS(arr) (sizeof(arr) / sizeof(arr[0])) 
+
+int numarray[] = {123, 145, 512, 627, 800, 933}; 
+
+int numeric (const int *p1, const int *p2) 
+{ 
+return(*p1 - *p2); 
+} 
+
+int lookup(int key) 
+{ 
+int *itemptr; 
+
+/* The cast of (int(*)(const void *,const void*)) 
+is needed to avoid a type mismatch error at 
+compile time */ 
+itemptr = bsearch (&key, numarray, NELEMS(numarray), 
+sizeof(int), (int(*)(const void *,const void *))numeric); 
+return (itemptr != NULL); 
+} 
+
+int main(void) 
+{ 
+if (lookup(512)) 
+printf("512 is in the table.\n"); 
+else 
+printf("512 isn't in the table.\n"); 
+
+return 0; 
+
+}
